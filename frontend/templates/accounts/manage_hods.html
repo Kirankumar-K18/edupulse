@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}Manage HODs{% endblock %}
+{% block page_title %}Head of Departments{% endblock %}
+
+{% block content %}
+<div class="section-card">
+  <div class="section-card-header">
+    <h6 class="section-card-title"><i class="bi bi-person-badge text-primary-custom"></i> All HODs</h6>
+    <a href="{% url 'accounts:create_hod' %}" class="btn btn-sm btn-primary">
+      <i class="bi bi-plus me-1"></i> Add HOD
+    </a>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover">
+      <thead>
+        <tr><th>Name</th><th>Email</th><th>Department</th><th>Status</th><th>Joined</th><th>Actions</th></tr>
+      </thead>
+      <tbody>
+        {% for hod in hods %}
+        <tr>
+          <td class="fw-500">{{ hod.user.full_name }}</td>
+          <td>{{ hod.user.email }}</td>
+          <td><span class="badge bg-primary">{{ hod.department.name }}</span></td>
+          <td>{% if hod.is_active %}<span class="badge bg-success">Active</span>{% else %}<span class="badge bg-secondary">Inactive</span>{% endif %}</td>
+          <td>{{ hod.created_at|date:"d M Y" }}</td>
+          <td>
+            <form method="post" action="{% url 'accounts:delete_hod' hod.pk %}" class="d-inline">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-sm btn-outline-danger"
+                      data-confirm="Deactivate HOD '{{ hod.user.full_name }}'?">
+                <i class="bi bi-person-dash"></i> Deactivate
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" class="text-center text-muted py-4">No HODs yet. <a href="{% url 'accounts:create_hod' %}">Create one</a>.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

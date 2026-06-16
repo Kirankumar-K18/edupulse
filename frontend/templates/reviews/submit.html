@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% block title %}Submit Review{% endblock %}
+{% block page_title %}Submit Lecturer Review{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+    <div class="section-card">
+      <div class="section-card-header">
+        <h6 class="section-card-title"><i class="bi bi-star-fill text-primary-custom"></i> Rate Your Lecturer</h6>
+      </div>
+      <div class="section-card-body">
+
+        {% if not student.can_submit_review %}
+        <div class="alert alert-warning">
+          <i class="bi bi-exclamation-triangle-fill me-2"></i>
+          Your attendance ({{ student.attendance_percentage }}%) is below the required 75% threshold.
+          You cannot submit reviews until your attendance improves.
+        </div>
+        {% else %}
+
+        <form method="post" action="{% url 'reviews:submit' %}">
+          {% csrf_token %}
+
+          <!-- Lecturer -->
+          <div class="mb-4">
+            <label class="form-label fw-500">Select Lecturer</label>
+            <select name="lecturer" class="form-select form-select-lg" required>
+              <option value="">— Choose a lecturer —</option>
+              {% for lec in form.lecturer.field.queryset %}
+              <option value="{{ lec.pk }}">{{ lec.user.full_name }} ({{ lec.employee_id }})</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <!-- Star Rating -->
+          <div class="mb-4">
+            <label class="form-label fw-500">Rating</label>
+            <div class="d-flex gap-2 align-items-center">
+              <input type="hidden" name="rating" id="ratingValue" value="0" required>
+              <div class="star-rating-input d-flex gap-1" style="font-size:2.2rem; cursor:pointer">
+                {% for i in "12345" %}
+                <span class="star-btn" data-val="{{ forloop.counter }}">
+                  <i class="bi bi-star text-secondary"></i>
+                </span>
+                {% endfor %}
+              </div>
+              <span id="ratingLabel" class="text-muted ms-2">Click a star to rate</span>
+            </div>
+          </div>
+
+          <!-- Comment -->
+          <div class="mb-4">
+            <label class="form-label fw-500">Comment</label>
+            <textarea name="comment" class="form-control" rows="5" maxlength="1000"
+                      placeholder="Write your honest feedback... (max 1000 characters)"
+                      required id="commentBox"></textarea>
+            <div class="d-flex justify-content-between mt-1">
+              <small class="text-muted">Be respectful and constructive.</small>
+              <small class="text-muted" id="charCount">0/1000</small>
+            </div>
+          </div>
+
+          <div class="alert alert-info py-2">
+            <i class="bi bi-info-circle me-1"></i>
+            Reviews are automatically checked for inappropriate language. Offensive reviews will be flagged.
+          </div>
+
+          <button type="submit" class="btn btn-primary px-5 btn-lg">
+            <i class="bi bi-send me-1"></i> Submit Review
+          </button>
+        </form>
+        {% endif %}
+
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Star rating
+  const stars = document.querySelectorAll('.star-btn');
+  const ratingInput = document.getElementById('ratingValue');
+  const ratingLabel = document.getElementById('ratingLabel');
+  const labels = ['', 'Poor', 'Fair', 'Good', 'Very Good', 'Excellent'];
+
+  function paintStars(upTo) {
+    stars.forEach((s, i) => {
+      s.querySelector('i').className = i < upTo ? 'bi bi-star-fill text-warning' : 'bi bi-star text-secondary';
+    });
+  }
+
+  stars.forEach((star, idx) => {
+    star.addEventListener('mouseenter', () => paintStars(idx + 1));
+    star.addEventListener('mouseleave', () => paintStars(parseInt(ratingInput.value)));
+    star.addEventListener('click', () => {
+      ratingInput.value = idx + 1;
+      paintStars(idx + 1);
+      ratingLabel.textContent = labels[idx + 1];
+    });
+  });
+
+  // Char counter
+  const box = document.getElementById('commentBox');
+  box?.addEventListener('input', () => {
+    document.getElementById('charCount').textContent = box.value.length + '/1000';
+  });
+</script>
+{% endblock %}

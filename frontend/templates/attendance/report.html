@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}Attendance Report{% endblock %}
+{% block page_title %}Attendance Report{% endblock %}
+
+{% block content %}
+<div class="section-card">
+  <div class="section-card-header">
+    <h6 class="section-card-title"><i class="bi bi-calendar-check text-primary-custom"></i> Student Attendance Overview</h6>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover">
+      <thead>
+        <tr><th>USN</th><th>Name</th><th>Department</th><th>Section</th><th>Sem</th><th>Overall %</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        {% for row in summary %}
+        <tr>
+          <td><span class="badge bg-secondary">{{ row.student.usn }}</span></td>
+          <td class="fw-500">{{ row.student.user.full_name }}</td>
+          <td>{{ row.student.department.name }}</td>
+          <td>{{ row.student.section }}</td>
+          <td>{{ row.student.semester }}</td>
+          <td>
+            <div class="att-progress mb-1"><div class="att-progress-bar {% if row.overall >= 75 %}good{% elif row.overall >= 60 %}warning{% else %}critical{% endif %}" style="width:{{ row.overall }}%"></div></div>
+            <span class="fw-500">{{ row.overall }}%</span>
+          </td>
+          <td>
+            <span class="att-badge att-{% if row.overall >= 75 %}good{% elif row.overall >= 60 %}warning{% else %}critical{% endif %}">
+              {% if row.overall >= 75 %}Good{% elif row.overall >= 60 %}Warning{% else %}Critical{% endif %}
+            </span>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" class="text-center text-muted py-4">No attendance records found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

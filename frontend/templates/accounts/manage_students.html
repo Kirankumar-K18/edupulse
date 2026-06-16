@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% block title %}Manage Students{% endblock %}
+{% block page_title %}Students{% endblock %}
+
+{% block content %}
+<div class="section-card">
+  <div class="section-card-header">
+    <h6 class="section-card-title"><i class="bi bi-people text-primary-custom"></i> Students</h6>
+    <a href="{% url 'accounts:register' %}" class="btn btn-sm btn-outline-primary">
+      <i class="bi bi-person-plus me-1"></i> Add Student
+    </a>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover">
+      <thead>
+        <tr><th>USN</th><th>Name</th><th>Department</th><th>Section</th><th>Sem</th><th>Attendance</th><th>Status</th><th>Actions</th></tr>
+      </thead>
+      <tbody>
+        {% for student in students %}
+        <tr>
+          <td><span class="badge bg-secondary">{{ student.usn }}</span></td>
+          <td class="fw-500">{{ student.user.full_name }}</td>
+          <td>{{ student.department.name }}</td>
+          <td>{{ student.section }}</td>
+          <td>{{ student.semester }}</td>
+          <td>
+            <span class="att-badge att-{% if student.attendance_percentage >= 75 %}good{% elif student.attendance_percentage >= 60 %}warning{% else %}critical{% endif %}">
+              {{ student.attendance_percentage }}%
+            </span>
+          </td>
+          <td>{% if student.is_active %}<span class="badge bg-success">Active</span>{% else %}<span class="badge bg-secondary">Inactive</span>{% endif %}</td>
+          <td>
+            <form method="post" action="{% url 'accounts:delete_student' student.pk %}" class="d-inline">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-sm btn-outline-danger"
+                      data-confirm="Deactivate student '{{ student.user.full_name }}'?">
+                <i class="bi bi-person-dash"></i>
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="8" class="text-center text-muted py-4">No students found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <!-- Pagination -->
+  {% if students.has_other_pages %}
+  <div class="section-card-body border-top">
+    <nav>
+      <ul class="pagination pagination-sm justify-content-center mb-0">
+        {% if students.has_previous %}
+        <li class="page-item"><a class="page-link" href="?page={{ students.previous_page_number }}">«</a></li>
+        {% endif %}
+        {% for i in students.paginator.page_range %}
+        <li class="page-item {% if i == students.number %}active{% endif %}">
+          <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+        </li>
+        {% endfor %}
+        {% if students.has_next %}
+        <li class="page-item"><a class="page-link" href="?page={{ students.next_page_number }}">»</a></li>
+        {% endif %}
+      </ul>
+    </nav>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

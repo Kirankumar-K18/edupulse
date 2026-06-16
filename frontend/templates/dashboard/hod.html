@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% block title %}HOD Dashboard — {{ dept.name }}{% endblock %}
+{% block page_title %}{{ dept.name }} — HOD Dashboard{% endblock %}
+
+{% block content %}
+<div class="row g-3 mb-4">
+  {% with s=stats %}
+  <div class="col-6 col-lg-2">
+    <div class="stat-card"><div class="stat-icon stat-icon-success"><i class="bi bi-person-workspace"></i></div>
+      <div class="stat-body"><div class="stat-value">{{ s.total_lecturers }}</div><div class="stat-label">Lecturers</div></div></div>
+  </div>
+  <div class="col-6 col-lg-2">
+    <div class="stat-card"><div class="stat-icon stat-icon-warning"><i class="bi bi-people"></i></div>
+      <div class="stat-body"><div class="stat-value">{{ s.total_students }}</div><div class="stat-label">Students</div></div></div>
+  </div>
+  <div class="col-6 col-lg-2">
+    <div class="stat-card"><div class="stat-icon stat-icon-primary"><i class="bi bi-book"></i></div>
+      <div class="stat-body"><div class="stat-value">{{ s.total_subjects }}</div><div class="stat-label">Subjects</div></div></div>
+  </div>
+  <div class="col-6 col-lg-2">
+    <div class="stat-card"><div class="stat-icon stat-icon-info"><i class="bi bi-calendar-check"></i></div>
+      <div class="stat-body"><div class="stat-value">{{ s.dept_attendance }}%</div><div class="stat-label">Attendance</div></div></div>
+  </div>
+  <div class="col-6 col-lg-2">
+    <div class="stat-card"><div class="stat-icon stat-icon-success"><i class="bi bi-star"></i></div>
+      <div class="stat-body"><div class="stat-value">{{ s.total_reviews }}</div><div class="stat-label">Reviews</div></div></div>
+  </div>
+  <div class="col-6 col-lg-2">
+    <div class="stat-card"><div class="stat-icon stat-icon-danger"><i class="bi bi-shield-x"></i></div>
+      <div class="stat-body"><div class="stat-value">{{ s.blocked_reviews }}</div><div class="stat-label">Blocked</div></div></div>
+  </div>
+  {% endwith %}
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-8">
+    <div class="section-card">
+      <div class="section-card-header">
+        <h6 class="section-card-title"><i class="bi bi-person-workspace text-primary-custom"></i> Lecturer Performance</h6>
+        <a href="{% url 'accounts:create_lecturer' %}" class="btn btn-sm btn-primary"><i class="bi bi-plus"></i> Add Lecturer</a>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead><tr><th>Lecturer</th><th>Employee ID</th><th>Avg Rating</th><th>Reviews</th><th>Blocked</th></tr></thead>
+          <tbody>
+            {% for ls in lecturer_stats %}
+            <tr>
+              <td class="fw-500">{{ ls.lecturer.user.full_name }}</td>
+              <td><span class="badge bg-secondary">{{ ls.lecturer.employee_id }}</span></td>
+              <td>
+                <span class="stars">{% for i in "12345" %}{% if forloop.counter <= ls.avg_rating|floatformat:"0"|add:"0" %}★{% else %}<span class="empty">★</span>{% endif %}{% endfor %}</span>
+                <span class="ms-1 fw-500">{{ ls.avg_rating }}</span>
+              </td>
+              <td>{{ ls.total_reviews }}</td>
+              <td>{% if ls.blocked %}<span class="badge bg-danger">{{ ls.blocked }}</span>{% else %}<span class="text-muted">—</span>{% endif %}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" class="text-center text-muted py-3">No lecturers yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="section-card">
+      <div class="section-card-header">
+        <h6 class="section-card-title"><i class="bi bi-shield-x text-danger"></i> Blocked Reviews</h6>
+        <a href="{% url 'reviews:hod' %}" class="btn btn-sm btn-outline-secondary">View All</a>
+      </div>
+      {% for br in blocked_reviews %}
+      <div class="blocked-card mx-3 mb-2">
+        <div class="fw-500 fs-xs">{{ br.review.student.usn }} → {{ br.review.lecturer.user.full_name }}</div>
+        <div class="text-muted fs-xs mt-1">{{ br.reason }}</div>
+        <div class="text-muted fs-xs">{{ br.blocked_at|date:"d M Y" }}</div>
+      </div>
+      {% empty %}
+      <div class="text-center text-muted py-3 fs-xs">No blocked reviews.</div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block page_title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<!-- STAT CARDS -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-icon stat-icon-primary"><i class="bi bi-building"></i></div>
+      <div class="stat-body">
+        <div class="stat-value">{{ stats.total_departments }}</div>
+        <div class="stat-label">Departments</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-icon stat-icon-info"><i class="bi bi-person-badge"></i></div>
+      <div class="stat-body">
+        <div class="stat-value">{{ stats.total_hods }}</div>
+        <div class="stat-label">HODs</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-icon stat-icon-success"><i class="bi bi-person-workspace"></i></div>
+      <div class="stat-body">
+        <div class="stat-value">{{ stats.total_lecturers }}</div>
+        <div class="stat-label">Lecturers</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-icon stat-icon-warning"><i class="bi bi-people"></i></div>
+      <div class="stat-body">
+        <div class="stat-value">{{ stats.total_students }}</div>
+        <div class="stat-label">Students</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-icon stat-icon-success"><i class="bi bi-star"></i></div>
+      <div class="stat-body">
+        <div class="stat-value">{{ stats.total_reviews }}</div>
+        <div class="stat-label">Total Reviews</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-icon stat-icon-danger"><i class="bi bi-shield-x"></i></div>
+      <div class="stat-body">
+        <div class="stat-value">{{ stats.total_blocked }}</div>
+        <div class="stat-label">Blocked Reviews</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-icon stat-icon-primary"><i class="bi bi-book"></i></div>
+      <div class="stat-body">
+        <div class="stat-value">{{ stats.total_subjects }}</div>
+        <div class="stat-label">Subjects</div>
+      </div>
+    </div>
+  </div>
+
+<div class="row g-3">
+  <!-- DEPARTMENTS TABLE -->
+  <div class="col-lg-7">
+    <div class="section-card">
+      <div class="section-card-header">
+        <h6 class="section-card-title"><i class="bi bi-building text-primary-custom"></i> Departments</h6>
+        <a href="{% url 'accounts:create_department' %}" class="btn btn-sm btn-primary">
+          <i class="bi bi-plus"></i> Add
+        </a>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead><tr>
+            <th>Department</th><th>Code</th><th>Lecturers</th><th>Students</th><th>Status</th>
+          </tr></thead>
+          <tbody>
+            {% for dept in departments %}
+            <tr>
+              <td class="fw-500">{{ dept.name }}</td>
+              <td><span class="badge bg-secondary">{{ dept.code }}</span></td>
+              <td>{{ dept.lecturer_count }}</td>
+              <td>{{ dept.student_count }}</td>
+              <td>
+                {% if dept.is_active %}
+                  <span class="badge bg-success">Active</span>
+                {% else %}
+                  <span class="badge bg-secondary">Inactive</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" class="text-center text-muted py-3">No departments yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECENT ACTIVITY LOGS -->
+  <div class="col-lg-5">
+    <div class="section-card">
+      <div class="section-card-header">
+        <h6 class="section-card-title"><i class="bi bi-clock-history text-primary-custom"></i> Recent Activity</h6>
+        <a href="{% url 'accounts:activity_logs' %}" class="btn btn-sm btn-outline-secondary">View All</a>
+      </div>
+      <div class="section-card-body p-0">
+        <ul class="list-group list-group-flush">
+          {% for log in recent_logs %}
+          <li class="list-group-item px-3 py-2">
+            <div class="d-flex align-items-start gap-2">
+              <i class="bi bi-circle-fill mt-1 fs-xs {% if log.is_success %}text-success{% else %}text-danger{% endif %}"></i>
+              <div class="flex-grow-1 overflow-hidden">
+                <div class="fw-500 text-truncate" style="max-width:220px">{{ log.description }}</div>
+                <div class="text-muted fs-xs">{{ log.user.full_name|default:"System" }} · {{ log.timestamp|timesince }} ago</div>
+              </div>
+            </div>
+          </li>
+          {% empty %}
+          <li class="list-group-item text-center text-muted py-3">No activity yet.</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECENT REVIEWS -->
+  <div class="col-12">
+    <div class="section-card">
+      <div class="section-card-header">
+        <h6 class="section-card-title"><i class="bi bi-star text-primary-custom"></i> Recent Reviews</h6>
+        <a href="{% url 'reviews:admin_reviews' %}" class="btn btn-sm btn-outline-secondary">View All</a>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead><tr><th>Student</th><th>Lecturer</th><th>Rating</th><th>Comment</th><th>Date</th><th>Status</th></tr></thead>
+          <tbody>
+            {% for r in recent_reviews %}
+            <tr>
+              <td>{{ r.student.usn }}</td>
+              <td>{{ r.lecturer.user.full_name }}</td>
+              <td><span class="stars">{% for i in "12345" %}{% if forloop.counter <= r.rating %}★{% else %}<span class="empty">★</span>{% endif %}{% endfor %}</span></td>
+              <td class="text-truncate" style="max-width:200px">{{ r.comment }}</td>
+              <td>{{ r.submitted_at|date:"d M Y" }}</td>
+              <td>
+                {% if r.is_blocked %}
+                  <span class="badge bg-danger">Blocked</span>
+                {% else %}
+                  <span class="badge bg-success">Approved</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6" class="text-center text-muted py-3">No reviews yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

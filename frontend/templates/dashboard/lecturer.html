@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% block title %}Lecturer Dashboard{% endblock %}
+{% block page_title %}My Dashboard{% endblock %}
+
+{% block content %}
+<div class="row g-3 mb-4">
+  <div class="col-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-icon stat-icon-warning"><i class="bi bi-star-fill"></i></div>
+      <div class="stat-body"><div class="stat-value">{{ stats.avg_rating }}/5</div><div class="stat-label">Avg Rating</div></div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-icon stat-icon-success"><i class="bi bi-chat-square-text"></i></div>
+      <div class="stat-body"><div class="stat-value">{{ stats.total_reviews }}</div><div class="stat-label">Total Reviews</div></div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-icon stat-icon-primary"><i class="bi bi-book"></i></div>
+      <div class="stat-body"><div class="stat-value">{{ stats.total_subjects }}</div><div class="stat-label">Subjects</div></div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-icon stat-icon-info"><i class="bi bi-people"></i></div>
+      <div class="stat-body"><div class="stat-value">{{ stats.total_students }}</div><div class="stat-label">Students</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-5">
+    <div class="section-card mb-3">
+      <div class="section-card-header">
+        <h6 class="section-card-title"><i class="bi bi-bar-chart text-primary-custom"></i> Rating Distribution</h6>
+      </div>
+      <div class="section-card-body">
+        {% for star, count in distribution.items %}
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <span class="text-warning fw-500" style="width:24px">{{ star }}★</span>
+          <div class="flex-grow-1 att-progress" style="height:14px">
+            <div class="att-progress-bar good" style="width:{% if stats.total_reviews %}{% widthratio count stats.total_reviews 100 %}{% else %}0{% endif %}%"></div>
+          </div>
+          <span class="text-muted fs-xs" style="width:20px">{{ count }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-card-header">
+        <h6 class="section-card-title"><i class="bi bi-lightning-fill text-primary-custom"></i> Quick Actions</h6>
+      </div>
+      <div class="section-card-body d-grid gap-2">
+        <a href="{% url 'attendance:mark' %}" class="btn btn-primary"><i class="bi bi-pencil-square me-1"></i> Mark Attendance</a>
+        <a href="{% url 'reviews:lecturer' %}" class="btn btn-outline-primary"><i class="bi bi-star me-1"></i> View My Reviews</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-7">
+    <div class="section-card mb-3">
+      <div class="section-card-header">
+        <h6 class="section-card-title"><i class="bi bi-book text-primary-custom"></i> Subject Attendance Summary</h6>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead><tr><th>Subject</th><th>Students</th><th>Avg Attendance</th></tr></thead>
+          <tbody>
+            {% for ss in subject_stats %}
+            <tr>
+              <td class="fw-500">{{ ss.subject.name }}<br><small class="text-muted">{{ ss.subject.code }}</small></td>
+              <td>{{ ss.total_students }}</td>
+              <td>
+                <div class="att-progress mb-1"><div class="att-progress-bar {% if ss.avg_attendance >= 75 %}good{% elif ss.avg_attendance >= 60 %}warning{% else %}critical{% endif %}" style="width:{{ ss.avg_attendance }}%"></div></div>
+                <span class="fs-xs text-muted">{{ ss.avg_attendance }}%</span>
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="3" class="text-center text-muted py-3">No subjects assigned.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-card-header">
+        <h6 class="section-card-title"><i class="bi bi-star text-primary-custom"></i> Recent Reviews</h6>
+        <a href="{% url 'reviews:lecturer' %}" class="btn btn-sm btn-outline-secondary">All</a>
+      </div>
+      <ul class="list-group list-group-flush">
+        {% for r in recent_reviews %}
+        <li class="list-group-item px-3 py-2">
+          <div class="d-flex justify-content-between">
+            <span class="fw-500">{{ r.student.user.full_name }}</span>
+            <span class="stars">{% for i in "12345" %}{% if forloop.counter <= r.rating %}★{% else %}<span class="empty">★</span>{% endif %}{% endfor %}</span>
+          </div>
+          <div class="text-muted fs-xs text-truncate">{{ r.comment }}</div>
+          <div class="text-muted fs-xs">{{ r.submitted_at|date:"d M Y" }}</div>
+        </li>
+        {% empty %}
+        <li class="list-group-item text-center text-muted py-3">No reviews yet.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}

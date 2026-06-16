@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% block title %}My Profile{% endblock %}
+{% block page_title %}My Profile{% endblock %}
+
+{% block content %}
+<div class="row g-3 justify-content-center">
+  <div class="col-lg-8">
+    <div class="section-card mb-3">
+      <div class="section-card-header">
+        <h6 class="section-card-title"><i class="bi bi-person-circle text-primary-custom"></i> Profile Information</h6>
+      </div>
+      <div class="section-card-body">
+        <div class="d-flex align-items-center gap-3 mb-4">
+          <div class="user-avatar" style="width:72px;height:72px;font-size:1.8rem">
+            {% if user.profile_pic %}
+              <img src="{{ user.profile_pic.url }}" alt="avatar">
+            {% else %}
+              {{ user.full_name|first|upper }}
+            {% endif %}
+          </div>
+          <div>
+            <h5 class="mb-0">{{ user.full_name }}</h5>
+            <span class="badge-role badge-{{ user.role }}">{{ user.get_role_display }}</span>
+            <div class="text-muted fs-xs mt-1">{{ user.email }}</div>
+          </div>
+        </div>
+
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label fw-500">Full Name</label>
+              <input type="text" name="full_name" class="form-control" value="{{ user.full_name }}" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-500">Phone</label>
+              <input type="text" name="phone" class="form-control" value="{{ user.phone }}">
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-500">Profile Picture</label>
+              <input type="file" name="profile_pic" class="form-control" accept="image/*">
+            </div>
+          </div>
+          <div class="mt-3 d-flex gap-2">
+            <button type="submit" class="btn btn-primary px-4">
+              <i class="bi bi-save me-1"></i> Save Changes
+            </button>
+            <a href="{% url 'accounts:change_password' %}" class="btn btn-outline-secondary">
+              <i class="bi bi-key me-1"></i> Change Password
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Role-specific info -->
+    {% if is_student %}
+    <div class="section-card">
+      <div class="section-card-header">
+        <h6 class="section-card-title"><i class="bi bi-mortarboard text-primary-custom"></i> Student Details</h6>
+      </div>
+      <div class="section-card-body">
+        {% with s=user.student_profile %}
+        <div class="row g-2">
+          <div class="col-md-4"><div class="text-muted fs-xs">USN</div><div class="fw-500">{{ s.usn }}</div></div>
+          <div class="col-md-4"><div class="text-muted fs-xs">Department</div><div class="fw-500">{{ s.department.name }}</div></div>
+          <div class="col-md-4"><div class="text-muted fs-xs">Section</div><div class="fw-500">{{ s.section }}</div></div>
+          <div class="col-md-4"><div class="text-muted fs-xs">Semester</div><div class="fw-500">{{ s.semester }}</div></div>
+          <div class="col-md-4"><div class="text-muted fs-xs">Batch Year</div><div class="fw-500">{{ s.batch_year }}</div></div>
+          <div class="col-md-4"><div class="text-muted fs-xs">Attendance</div><div class="fw-500 {% if s.attendance_percentage >= 75 %}text-success{% else %}text-danger{% endif %}">{{ s.attendance_percentage }}%</div></div>
+        </div>
+        {% endwith %}
+      </div>
+    </div>
+    {% elif is_lecturer %}
+    <div class="section-card">
+      <div class="section-card-header">
+        <h6 class="section-card-title"><i class="bi bi-person-workspace text-primary-custom"></i> Lecturer Details</h6>
+      </div>
+      <div class="section-card-body">
+        {% with l=user.lecturer_profile %}
+        <div class="row g-2">
+          <div class="col-md-4"><div class="text-muted fs-xs">Employee ID</div><div class="fw-500">{{ l.employee_id }}</div></div>
+          <div class="col-md-4"><div class="text-muted fs-xs">Department</div><div class="fw-500">{{ l.department.name }}</div></div>
+          <div class="col-md-4"><div class="text-muted fs-xs">Designation</div><div class="fw-500">{{ l.designation }}</div></div>
+          <div class="col-md-4"><div class="text-muted fs-xs">Experience</div><div class="fw-500">{{ l.experience_years }} years</div></div>
+          <div class="col-md-4"><div class="text-muted fs-xs">Avg Rating</div><div class="fw-500 text-warning">{{ l.average_rating }} ★</div></div>
+        </div>
+        {% endwith %}
+      </div>
+    </div>
+    {% elif is_hod %}
+    <div class="section-card">
+      <div class="section-card-header">
+        <h6 class="section-card-title"><i class="bi bi-person-badge text-primary-custom"></i> HOD Details</h6>
+      </div>
+      <div class="section-card-body">
+        {% with h=user.hod_profile %}
+        <div class="row g-2">
+          <div class="col-md-6"><div class="text-muted fs-xs">Department</div><div class="fw-500">{{ h.department.name }} ({{ h.department.code }})</div></div>
+          <div class="col-md-6"><div class="text-muted fs-xs">Joined</div><div class="fw-500">{{ h.joined_date|default:"—" }}</div></div>
+        </div>
+        {% endwith %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

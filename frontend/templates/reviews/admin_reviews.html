@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% block title %}All Reviews{% endblock %}
+{% block page_title %}All Reviews (Admin){% endblock %}
+
+{% block content %}
+<div class="row g-3 mb-3">
+  <div class="col-md-3"><div class="stat-card"><div class="stat-icon stat-icon-success"><i class="bi bi-star"></i></div><div class="stat-body"><div class="stat-value">{{ total_reviews }}</div><div class="stat-label">Total Reviews</div></div></div></div>
+  <div class="col-md-3"><div class="stat-card"><div class="stat-icon stat-icon-danger"><i class="bi bi-shield-x"></i></div><div class="stat-body"><div class="stat-value">{{ total_blocked }}</div><div class="stat-label">Blocked</div></div></div></div>
+</div>
+
+<ul class="nav nav-tabs mb-3">
+  <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#all-reviews">All Reviews</button></li>
+  <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#blocked-reviews">Blocked <span class="badge bg-danger ms-1">{{ total_blocked }}</span></button></li>
+</ul>
+
+<div class="tab-content">
+  <div class="tab-pane fade show active" id="all-reviews">
+    <div class="section-card">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead><tr><th>Student</th><th>Lecturer</th><th>Dept</th><th>Rating</th><th>Comment</th><th>Date</th><th>Status</th></tr></thead>
+          <tbody>
+            {% for r in reviews %}
+            <tr>
+              <td class="fw-500">{{ r.student.usn }}</td>
+              <td>{{ r.lecturer.user.full_name }}</td>
+              <td>{{ r.lecturer.department.name }}</td>
+              <td><span class="stars">{% for i in "12345" %}{% if forloop.counter <= r.rating %}★{% else %}<span class="empty">★</span>{% endif %}{% endfor %}</span></td>
+              <td style="max-width:200px" class="text-truncate">{{ r.comment }}</td>
+              <td>{{ r.submitted_at|date:"d M Y" }}</td>
+              <td>{% if r.is_blocked %}<span class="badge bg-danger">Blocked</span>{% else %}<span class="badge bg-success">OK</span>{% endif %}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="7" class="text-center text-muted py-4">No reviews.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-pane fade" id="blocked-reviews">
+    <div class="section-card">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead><tr><th>Student</th><th>Lecturer</th><th>Rating</th><th>Comment</th><th>Matched Words</th><th>Blocked</th><th>Action</th></tr></thead>
+          <tbody>
+            {% for br in blocked %}
+            <tr>
+              <td class="fw-500">{{ br.review.student.usn }}</td>
+              <td>{{ br.review.lecturer.user.full_name }}</td>
+              <td><span class="stars">{% for i in "12345" %}{% if forloop.counter <= br.review.rating %}★{% else %}<span class="empty">★</span>{% endif %}{% endfor %}</span></td>
+              <td style="max-width:180px" class="text-danger text-truncate">{{ br.review.comment }}</td>
+              <td>{% for w in br.matched_words %}<span class="badge bg-danger me-1">{{ w }}</span>{% endfor %}</td>
+              <td>{{ br.blocked_at|date:"d M Y" }}</td>
+              <td>
+                <form method="post" action="{% url 'reviews:unblock' br.review.pk %}" class="d-inline">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-sm btn-outline-success"
+                          data-confirm="Unblock this review?">
+                    <i class="bi bi-unlock me-1"></i> Unblock
+                  </button>
+                </form>
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="7" class="text-center text-muted py-4">No blocked reviews.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

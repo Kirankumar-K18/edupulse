@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block title %}Bad Words Filter{% endblock %}
+{% block page_title %}Profanity Filter — Bad Words List{% endblock %}
+
+{% block content %}
+<div class="row g-3">
+  <div class="col-lg-4">
+    <div class="section-card">
+      <div class="section-card-header">
+        <h6 class="section-card-title"><i class="bi bi-plus-circle text-primary-custom"></i> Add Word</h6>
+      </div>
+      <div class="section-card-body">
+        <form method="post">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="form-label fw-500">Word or Phrase</label>
+            <input type="text" name="word" class="form-control" placeholder="e.g. badword" required>
+            <div class="form-text">Words are case-insensitive and matched as whole words.</div>
+          </div>
+          <button type="submit" class="btn btn-primary w-100">
+            <i class="bi bi-shield-plus me-1"></i> Add to Filter
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-8">
+    <div class="section-card">
+      <div class="section-card-header">
+        <h6 class="section-card-title">
+          <i class="bi bi-shield-exclamation text-primary-custom"></i>
+          Filter List
+          <span class="badge bg-secondary ms-1">{{ words.count }}</span>
+        </h6>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr><th>Word</th><th>Added By</th><th>Date</th><th>Active</th><th>Action</th></tr>
+          </thead>
+          <tbody>
+            {% for w in words %}
+            <tr>
+              <td><code class="text-danger">{{ w.word }}</code></td>
+              <td>{{ w.added_by.full_name|default:"System" }}</td>
+              <td>{{ w.created_at|date:"d M Y" }}</td>
+              <td>{% if w.is_active %}<span class="badge bg-success">Active</span>{% else %}<span class="badge bg-secondary">Off</span>{% endif %}</td>
+              <td>
+                <form method="post" action="{% url 'accounts:delete_bad_word' w.pk %}" class="d-inline">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-sm btn-outline-danger"
+                          data-confirm="Remove '{{ w.word }}' from filter?">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </form>
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" class="text-center text-muted py-4">No words in filter yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

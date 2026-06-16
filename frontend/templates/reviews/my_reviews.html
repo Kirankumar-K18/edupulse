@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}My Reviews{% endblock %}
+{% block page_title %}My Submitted Reviews{% endblock %}
+
+{% block content %}
+<div class="section-card">
+  <div class="section-card-header">
+    <h6 class="section-card-title"><i class="bi bi-chat-square-text text-primary-custom"></i> Reviews I Submitted</h6>
+    <a href="{% url 'reviews:submit' %}" class="btn btn-sm btn-primary">
+      <i class="bi bi-plus me-1"></i> New Review
+    </a>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover">
+      <thead><tr><th>Lecturer</th><th>Rating</th><th>Comment</th><th>Semester</th><th>Date</th><th>Status</th></tr></thead>
+      <tbody>
+        {% for r in reviews %}
+        <tr>
+          <td class="fw-500">{{ r.lecturer.user.full_name }}<br><small class="text-muted">{{ r.lecturer.employee_id }}</small></td>
+          <td><span class="stars">{% for i in "12345" %}{% if forloop.counter <= r.rating %}★{% else %}<span class="empty">★</span>{% endif %}{% endfor %}</span></td>
+          <td style="max-width:250px" class="text-truncate">{{ r.comment }}</td>
+          <td>Sem {{ r.semester }}</td>
+          <td>{{ r.submitted_at|date:"d M Y" }}</td>
+          <td>{% if r.is_blocked %}<span class="badge bg-warning text-dark">Flagged</span>{% else %}<span class="badge bg-success">Submitted</span>{% endif %}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" class="text-center text-muted py-4">You haven't submitted any reviews yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

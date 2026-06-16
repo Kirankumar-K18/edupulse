@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% block title %}Activity Logs{% endblock %}
+{% block page_title %}Activity Logs{% endblock %}
+
+{% block content %}
+<!-- Filter bar -->
+<div class="section-card mb-3">
+  <div class="section-card-body py-2">
+    <form method="get" class="row g-2 align-items-end">
+      <div class="col-md-4">
+        <label class="form-label fw-500 mb-1">Filter by Action</label>
+        <select name="action" class="form-select form-select-sm" onchange="this.form.submit()">
+          <option value="">All Actions</option>
+          {% for val, label in action_choices %}
+          <option value="{{ val }}" {% if current_action == val %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label fw-500 mb-1">Result</label>
+        <select name="success" class="form-select form-select-sm" onchange="this.form.submit()">
+          <option value="">All</option>
+          <option value="1">Success only</option>
+          <option value="0">Failures only</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <a href="{% url 'accounts:activity_logs' %}" class="btn btn-sm btn-outline-secondary w-100">Clear</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="section-card">
+  <div class="section-card-header">
+    <h6 class="section-card-title"><i class="bi bi-clock-history text-primary-custom"></i> Log Entries</h6>
+    <span class="badge bg-secondary">{{ logs.paginator.count }} total</span>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover" style="font-size:.82rem">
+      <thead>
+        <tr><th>Time</th><th>User</th><th>Action</th><th>Description</th><th>IP</th><th>Result</th></tr>
+      </thead>
+      <tbody>
+        {% for log in logs %}
+        <tr>
+          <td class="text-muted text-nowrap">{{ log.timestamp|date:"d M Y H:i:s" }}</td>
+          <td class="fw-500">{{ log.user.full_name|default:"System" }}</td>
+          <td><span class="badge bg-primary">{{ log.get_action_display }}</span></td>
+          <td style="max-width:320px">{{ log.description|truncatechars:80 }}</td>
+          <td class="text-muted">{{ log.ip_address|default:"—" }}</td>
+          <td>
+            {% if log.is_success %}
+              <i class="bi bi-check-circle-fill text-success"></i>
+            {% else %}
+              <i class="bi bi-x-circle-fill text-danger"></i>
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" class="text-center text-muted py-4">No log entries found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <!-- Pagination -->
+  {% if logs.has_other_pages %}
+  <div class="section-card-body border-top pt-2">
+    <nav>
+      <ul class="pagination pagination-sm justify-content-center mb-0">
+        {% if logs.has_previous %}
+        <li class="page-item"><a class="page-link" href="?page={{ logs.previous_page_number }}&action={{ current_action }}">«</a></li>
+        {% endif %}
+        {% for i in logs.paginator.page_range %}
+          {% if i == logs.number %}
+          <li class="page-item active"><span class="page-link">{{ i }}</span></li>
+          {% elif i == 1 or i == logs.paginator.num_pages or i|add:"-1" == logs.number or i|add:"1" == logs.number %}
+          <li class="page-item"><a class="page-link" href="?page={{ i }}&action={{ current_action }}">{{ i }}</a></li>
+          {% elif i|add:"-2" == logs.number or i|add:"2" == logs.number %}
+          <li class="page-item disabled"><span class="page-link">…</span></li>
+          {% endif %}
+        {% endfor %}
+        {% if logs.has_next %}
+        <li class="page-item"><a class="page-link" href="?page={{ logs.next_page_number }}&action={{ current_action }}">»</a></li>
+        {% endif %}
+      </ul>
+    </nav>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

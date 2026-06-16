@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}Manage Departments{% endblock %}
+{% block page_title %}Departments{% endblock %}
+
+{% block content %}
+<div class="section-card">
+  <div class="section-card-header">
+    <h6 class="section-card-title"><i class="bi bi-building text-primary-custom"></i> All Departments</h6>
+    <a href="{% url 'accounts:create_department' %}" class="btn btn-sm btn-primary">
+      <i class="bi bi-plus me-1"></i> Add Department
+    </a>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover">
+      <thead>
+        <tr><th>Name</th><th>Code</th><th>Description</th><th>Lecturers</th><th>Students</th><th>Status</th><th>Actions</th></tr>
+      </thead>
+      <tbody>
+        {% for dept in departments %}
+        <tr>
+          <td class="fw-500">{{ dept.name }}</td>
+          <td><span class="badge bg-secondary">{{ dept.code }}</span></td>
+          <td class="text-muted">{{ dept.description|truncatechars:50|default:"—" }}</td>
+          <td>{{ dept.total_lecturers }}</td>
+          <td>{{ dept.total_students }}</td>
+          <td>{% if dept.is_active %}<span class="badge bg-success">Active</span>{% else %}<span class="badge bg-secondary">Inactive</span>{% endif %}</td>
+          <td>
+            <a href="{% url 'accounts:edit_department' dept.pk %}" class="btn btn-sm btn-outline-primary me-1">
+              <i class="bi bi-pencil"></i>
+            </a>
+            <form method="post" action="{% url 'accounts:delete_department' dept.pk %}" class="d-inline">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-sm btn-outline-danger"
+                      data-confirm="Delete department '{{ dept.name }}'? This cannot be undone.">
+                <i class="bi bi-trash"></i>
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" class="text-center text-muted py-4">No departments yet. <a href="{% url 'accounts:create_department' %}">Create one</a>.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

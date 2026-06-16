@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% block title %}ARQ Session #{{ session.pk }} Result{% endblock %}
+{% block page_title %}ARQ Session #{{ session.pk }} — Results{% endblock %}
+
+{% block content %}
+<div class="row g-3 mb-4">
+  <div class="col-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-icon stat-icon-primary"><i class="bi bi-send"></i></div>
+      <div class="stat-body"><div class="stat-value">{{ session.total_packets }}</div><div class="stat-label">Total Packets</div></div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-icon {% if session.packets_sent_ok == session.total_packets %}stat-icon-success{% else %}stat-icon-warning{% endif %}">
+        <i class="bi bi-check2-circle"></i>
+      </div>
+      <div class="stat-body"><div class="stat-value">{{ session.packets_sent_ok }}/{{ session.total_packets }}</div><div class="stat-label">Delivered</div></div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-icon stat-icon-info"><i class="bi bi-arrow-repeat"></i></div>
+      <div class="stat-body"><div class="stat-value">{{ session.total_transmissions }}</div><div class="stat-label">Total Transmissions</div></div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-icon {% if session.efficiency >= 75 %}stat-icon-success{% elif session.efficiency >= 50 %}stat-icon-warning{% else %}stat-icon-danger{% endif %}">
+        <i class="bi bi-speedometer2"></i>
+      </div>
+      <div class="stat-body"><div class="stat-value">{{ session.efficiency }}%</div><div class="stat-label">Efficiency</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-3">
+    <div class="section-card">
+      <div class="section-card-header">
+        <h6 class="section-card-title"><i class="bi bi-info-circle text-primary-custom"></i> Session Info</h6>
+      </div>
+      <div class="section-card-body">
+        <table class="table table-sm">
+          <tr><th>Status</th><td>
+            {% if session.status == 'completed' %}<span class="badge bg-success">Completed</span>
+            {% elif session.status == 'failed' %}<span class="badge bg-danger">Partial Fail</span>
+            {% else %}<span class="badge bg-secondary">Running</span>{% endif %}
+          </td></tr>
+          <tr><th>Loss Prob</th><td>{{ session.loss_probability }}</td></tr>
+          <tr><th>Timeout</th><td>{{ session.timeout_seconds }}s</td></tr>
+          <tr><th>Max Retries</th><td>{{ session.max_retries }}</td></tr>
+          <tr><th>Started</th><td>{{ session.created_at|date:"d M Y H:i" }}</td></tr>
+          <tr><th>Efficiency</th><td class="fw-500 {% if session.efficiency >= 75 %}text-success{% elif session.efficiency >= 50 %}text-warning{% else %}text-danger{% endif %}">{{ session.efficiency }}%</td></tr>
+        </table>
+        <a href="{% url 'arq:home' %}" class="btn btn-outline-primary w-100 mt-2">
+          <i class="bi bi-plus me-1"></i> New Simulation
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-9">
+    <div class="section-card">
+      <div class="section-card-header">
+        <h6 class="section-card-title"><i class="bi bi-diagram-3 text-primary-custom"></i> Event Timeline</h6>
+        <button class="btn btn-sm btn-outline-primary" id="replayBtn">
+          <i class="bi bi-play-fill me-1"></i> Replay Animation
+        </button>
+      </div>
+      <div class="section-card-body">
+        <div id="arqTimeline" class="arq-timeline">
+          {% for event in events %}
+          <div class="arq-event {{ event.event_type }}">
+            <i class="bi
+              {% if event.event_type == 'send' %}bi-send-fill
+              {% elif event.event_type == 'ack' %}bi-check-circle-fill
+              {% elif event.event_type == 'timeout' %}bi-clock-fill
+              {% elif event.event_type == 'retransmit' %}bi-arrow-repeat
+              {% elif event.event_type == 'drop' %}bi-x-circle-fill
+              {% else %}bi-patch-check-fill{% endif %} arq-event-icon">
+            </i>
+            <div>
+              <span class="fw-500">[P{{ event.packet_number }}]</span>
+              <span class="badge bg-secondary ms-1">{{ event.event_type|upper }}</span>
+              <span class="ms-1">{{ event.message }}</span>
+            </div>
+            <span class="arq-event-time">+{{ event.timestamp_ms }}ms</span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Replay animation
+  document.getElementById('replayBtn')?.addEventListener('click', () => {
+    fetch("{% url 'arq:result_json' session.pk %}")
+      .then(r => r.json())
+      .then(data => animateARQ(data.events, 'arqTimeline'));
+  });
+</script>
+{% endblock %}

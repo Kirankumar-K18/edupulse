@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Manage Lecturers{% endblock %}
+{% block page_title %}Lecturers{% endblock %}
+
+{% block content %}
+<div class="section-card">
+  <div class="section-card-header">
+    <h6 class="section-card-title"><i class="bi bi-person-workspace text-primary-custom"></i> Lecturers</h6>
+    <a href="{% url 'accounts:create_lecturer' %}" class="btn btn-sm btn-primary">
+      <i class="bi bi-plus me-1"></i> Add Lecturer
+    </a>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover">
+      <thead>
+        <tr><th>Name</th><th>Emp ID</th><th>Department</th><th>Designation</th><th>Avg Rating</th><th>Status</th><th>Actions</th></tr>
+      </thead>
+      <tbody>
+        {% for lec in lecturers %}
+        <tr>
+          <td class="fw-500">{{ lec.user.full_name }}</td>
+          <td><span class="badge bg-secondary">{{ lec.employee_id }}</span></td>
+          <td>{{ lec.department.name }}</td>
+          <td>{{ lec.designation }}</td>
+          <td><span class="text-warning">{{ lec.average_rating }} ★</span></td>
+          <td>{% if lec.is_active %}<span class="badge bg-success">Active</span>{% else %}<span class="badge bg-secondary">Inactive</span>{% endif %}</td>
+          <td>
+            <form method="post" action="{% url 'accounts:delete_lecturer' lec.pk %}" class="d-inline">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-sm btn-outline-danger"
+                      data-confirm="Deactivate lecturer '{{ lec.user.full_name }}'?">
+                <i class="bi bi-person-dash"></i>
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" class="text-center text-muted py-4">No lecturers found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

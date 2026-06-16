@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% block title %}Stop-and-Wait ARQ Simulation{% endblock %}
+{% block page_title %}Stop-and-Wait ARQ Protocol Simulation{% endblock %}
+
+{% block content %}
+<div class="row g-3">
+  <!-- CONFIG FORM -->
+  <div class="col-lg-4">
+    <div class="section-card">
+      <div class="section-card-header">
+        <h6 class="section-card-title"><i class="bi bi-sliders text-primary-custom"></i> Simulation Parameters</h6>
+      </div>
+      <div class="section-card-body">
+        <form method="post" action="{% url 'arq:run' %}">
+          {% csrf_token %}
+
+          <div class="mb-3">
+            <label class="form-label fw-500">Total Packets <span class="text-muted fs-xs">(1–20)</span></label>
+            <input type="number" name="total_packets" class="form-control" value="5" min="1" max="20" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-500">Loss Probability <span class="text-muted fs-xs">(0.0 – 0.9)</span></label>
+            <input type="number" name="loss_prob" class="form-control" value="0.2" min="0" max="0.9" step="0.1" required>
+            <div class="form-text">e.g. 0.2 = 20% packet loss</div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-500">Timeout (ms) <span class="text-muted fs-xs">(500–10000)</span></label>
+            <input type="number" name="timeout_ms" class="form-control" value="2000" min="500" max="10000" step="100" required>
+          </div>
+          <div class="mb-4">
+            <label class="form-label fw-500">Max Retries <span class="text-muted fs-xs">(1–5)</span></label>
+            <input type="number" name="max_retries" class="form-control" value="3" min="1" max="5" required>
+          </div>
+          <button type="submit" class="btn btn-primary w-100 btn-lg">
+            <i class="bi bi-play-fill me-1"></i> Run Simulation
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ABOUT + PAST SESSIONS -->
+  <div class="col-lg-8">
+    <div class="section-card mb-3">
+      <div class="section-card-header">
+        <h6 class="section-card-title"><i class="bi bi-info-circle text-primary-custom"></i> About Stop-and-Wait ARQ</h6>
+      </div>
+      <div class="section-card-body">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <h6 class="fw-600 mb-2">How it works</h6>
+            <ul class="list-unstyled fs-xs text-muted lh-lg">
+              <li><span class="badge b-primary me-1">1</span> Sender transmits one packet and starts a timer.</li>
+              <li><span class="badge b-primary me-1">2</span> Receiver sends ACK on successful receipt.</li>
+              <li><span class="badge b-primary me-1">3</span> If timer expires before ACK → retransmit.</li>
+              <li><span class="badge b-primary me-1">4</span> After max retries without ACK → packet fails.</li>
+              <li><span class="badge b-primary me-1">5</span> Sender waits for ACK before sending next packet.</li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <h6 class="fw-600 mb-2">Event types</h6>
+            <div class="arq-event send mb-1"><i class="bi bi-send-fill arq-event-icon"></i> <small>SEND — Packet transmitted</small></div>
+            <div class="arq-event ack mb-1"><i class="bi bi-check-circle-fill arq-event-icon"></i> <small>ACK — Acknowledged</small></div>
+            <div class="arq-event drop mb-1"><i class="bi bi-x-circle-fill arq-event-icon"></i> <small>DROP — Simulated loss</small></div>
+            <div class="arq-event timeout mb-1"><i class="bi bi-clock-fill arq-event-icon"></i> <small>TIMEOUT — No ACK received</small></div>
+            <div class="arq-event retransmit mb-1"><i class="bi bi-arrow-repeat arq-event-icon"></i> <small>RETRANSMIT — Resending</small></div>
+            <div class="arq-event success mb-1"><i class="bi bi-patch-check-fill arq-event-icon"></i> <small>SUCCESS — Delivered</small></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-card-header">
+        <h6 class="section-card-title"><i class="bi bi-clock-history text-primary-custom"></i> My Past Sessions</h6>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead><tr><th>#</th><th>Packets</th><th>Delivered</th><th>Transmissions</th><th>Efficiency</th><th>Status</th><th></th></tr></thead>
+          <tbody>
+            {% for s in sessions %}
+            <tr>
+              <td>{{ s.pk }}</td>
+              <td>{{ s.total_packets }}</td>
+              <td>{{ s.packets_sent_ok }}/{{ s.total_packets }}</td>
+              <td>{{ s.total_transmissions }}</td>
+              <td>
+                <span class="{% if s.efficiency >= 75 %}text-success{% elif s.efficiency >= 50 %}text-warning{% else %}text-danger{% endif %} fw-500">{{ s.efficiency }}%</span>
+              </td>
+              <td>
+                {% if s.status == 'completed' %}<span class="badge bg-success">Completed</span>
+                {% elif s.status == 'failed' %}<span class="badge bg-danger">Failed</span>
+                {% else %}<span class="badge bg-secondary">Running</span>{% endif %}
+              </td>
+              <td><a href="{% url 'arq:result' s.pk %}" class="btn btn-sm btn-outline-primary">View</a></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="7" class="text-center text-muted py-3">No sessions yet. Run a simulation above.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

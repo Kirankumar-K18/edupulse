@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block title %}My Attendance{% endblock %}
+{% block page_title %}My Attendance{% endblock %}
+
+{% block content %}
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <div class="stat-card">
+      <div class="stat-icon {% if overall >= 75 %}stat-icon-success{% elif overall >= 60 %}stat-icon-warning{% else %}stat-icon-danger{% endif %}">
+        <i class="bi bi-percent"></i>
+      </div>
+      <div class="stat-body">
+        <div class="stat-value">{{ overall }}%</div>
+        <div class="stat-label">Overall Attendance</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="stat-card">
+      <div class="stat-icon stat-icon-primary"><i class="bi bi-mortarboard"></i></div>
+      <div class="stat-body">
+        <div class="stat-value">{{ student.usn }}</div>
+        <div class="stat-label">USN · Sem {{ student.semester }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="stat-card">
+      <div class="stat-icon {% if can_review %}stat-icon-success{% else %}stat-icon-danger{% endif %}">
+        <i class="bi bi-{% if can_review %}check-circle-fill{% else %}x-circle-fill{% endif %}"></i>
+      </div>
+      <div class="stat-body">
+        <div class="stat-value fs-6">{% if can_review %}Eligible{% else %}Not Eligible{% endif %}</div>
+        <div class="stat-label">Review Submission</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section-card">
+  <div class="section-card-header">
+    <h6 class="section-card-title"><i class="bi bi-table text-primary-custom"></i> Subject-wise Breakdown</h6>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover">
+      <thead>
+        <tr><th>Subject</th><th>Code</th><th>Total Classes</th><th>Present</th><th>Absent</th><th>Attendance %</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        {% for row in summary %}
+        <tr>
+          <td class="fw-500">{{ row.subject.name }}</td>
+          <td><span class="badge bg-secondary">{{ row.subject.code }}</span></td>
+          <td>{{ row.total }}</td>
+          <td class="text-success fw-500">{{ row.present }}</td>
+          <td class="text-danger">{{ row.total|add:"-"|add:row.present }}</td>
+          <td>
+            <div class="att-progress mb-1"><div class="att-progress-bar {{ row.status }}" style="width:{{ row.percentage }}%"></div></div>
+            <span class="fw-500">{{ row.percentage }}%</span>
+          </td>
+          <td><span class="att-badge att-{{ row.status }}">
+            {% if row.status == 'good' %}Good{% elif row.status == 'warning' %}Warning{% else %}Critical{% endif %}
+          </span></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" class="text-center text-muted py-4">No attendance records found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

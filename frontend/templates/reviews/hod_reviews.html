@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block title %}Department Reviews{% endblock %}
+{% block page_title %}Department Reviews{% endblock %}
+
+{% block content %}
+<!-- Tabs -->
+<ul class="nav nav-tabs mb-3" id="reviewTabs">
+  <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#approved">Approved Reviews <span class="badge bg-success ms-1">{{ reviews.count }}</span></button></li>
+  <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#blocked">Blocked Reviews <span class="badge bg-danger ms-1">{{ blocked.count }}</span></button></li>
+</ul>
+
+<div class="tab-content">
+  <!-- Approved -->
+  <div class="tab-pane fade show active" id="approved">
+    <div class="section-card">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead><tr><th>Student</th><th>Lecturer</th><th>Rating</th><th>Comment</th><th>Date</th></tr></thead>
+          <tbody>
+            {% for r in reviews %}
+            <tr>
+              <td class="fw-500">{{ r.student.user.full_name }}<br><small class="text-muted">{{ r.student.usn }}</small></td>
+              <td>{{ r.lecturer.user.full_name }}</td>
+              <td><span class="stars">{% for i in "12345" %}{% if forloop.counter <= r.rating %}★{% else %}<span class="empty">★</span>{% endif %}{% endfor %}</span></td>
+              <td style="max-width:260px">{{ r.comment|truncatechars:120 }}</td>
+              <td>{{ r.submitted_at|date:"d M Y" }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" class="text-center text-muted py-4">No approved reviews.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Blocked -->
+  <div class="tab-pane fade" id="blocked">
+    <div class="section-card">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead><tr><th>Student</th><th>Lecturer</th><th>Rating</th><th>Comment</th><th>Reason</th><th>Blocked On</th></tr></thead>
+          <tbody>
+            {% for br in blocked %}
+            <tr>
+              <td class="fw-500">{{ br.review.student.user.full_name }}<br><small class="text-muted">{{ br.review.student.usn }}</small></td>
+              <td>{{ br.review.lecturer.user.full_name }}</td>
+              <td><span class="stars">{% for i in "12345" %}{% if forloop.counter <= br.review.rating %}★{% else %}<span class="empty">★</span>{% endif %}{% endfor %}</span></td>
+              <td style="max-width:200px" class="text-danger">{{ br.review.comment|truncatechars:100 }}</td>
+              <td><span class="badge bg-danger">{{ br.reason|truncatechars:50 }}</span></td>
+              <td>{{ br.blocked_at|date:"d M Y" }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6" class="text-center text-muted py-4">No blocked reviews.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

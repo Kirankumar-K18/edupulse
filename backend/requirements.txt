@@ -1,0 +1,5 @@
+Django==4.2.16
+PyMySQL==1.1.1
+Pillow==10.4.0
+crispy-bootstrap5==2024.2
+django-crispy-forms==2.3

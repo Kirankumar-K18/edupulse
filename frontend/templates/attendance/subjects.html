@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}Subjects{% endblock %}
+{% block page_title %}Subjects{% endblock %}
+
+{% block content %}
+<div class="section-card">
+  <div class="section-card-header">
+    <h6 class="section-card-title"><i class="bi bi-book text-primary-custom"></i> Subjects</h6>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover">
+      <thead>
+        <tr><th>Code</th><th>Name</th><th>Department</th><th>Lecturer</th><th>Semester</th><th>Credits</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        {% for subj in subjects %}
+        <tr>
+          <td><span class="badge bg-secondary">{{ subj.code }}</span></td>
+          <td class="fw-500">{{ subj.name }}</td>
+          <td>{{ subj.department.name }}</td>
+          <td>{{ subj.lecturer.user.full_name|default:"—" }}</td>
+          <td>{{ subj.semester }}</td>
+          <td>{{ subj.credits }}</td>
+          <td>{% if subj.is_active %}<span class="badge bg-success">Active</span>{% else %}<span class="badge bg-secondary">Inactive</span>{% endif %}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" class="text-center text-muted py-4">No subjects yet. Add them via Django Admin → Subjects.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% block title %}Mark Attendance{% endblock %}
+{% block page_title %}Mark Attendance{% endblock %}
+
+{% block content %}
+<!-- Subject selector -->
+<div class="section-card mb-4">
+  <div class="section-card-header">
+    <h6 class="section-card-title"><i class="bi bi-funnel text-primary-custom"></i> Select Subject</h6>
+  </div>
+  <div class="section-card-body">
+    <form method="get" class="row g-2 align-items-end">
+      <div class="col-md-5">
+        <label class="form-label">Subject</label>
+        <select name="subject" class="form-select" onchange="this.form.submit()">
+          <option value="">— Select Subject —</option>
+          {% for subj in subjects %}
+          <option value="{{ subj.pk }}" {% if selected_subject and selected_subject.pk == subj.pk %}selected{% endif %}>
+            {{ subj.code }} — {{ subj.name }} (Sem {{ subj.semester }})
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% if selected_subject %}
+<div class="section-card">
+  <div class="section-card-header">
+    <h6 class="section-card-title">
+      <i class="bi bi-pencil-square text-primary-custom"></i>
+      {{ selected_subject.name }} — {{ today|date:"d M Y" }}
+    </h6>
+    <div>
+      <label class="form-check-label text-muted me-2 fs-xs">Mark all present:</label>
+      <input type="checkbox" class="form-check-input" id="selectAllPresent">
+    </div>
+  </div>
+  <div class="section-card-body">
+    <form method="post" action="{% url 'attendance:submit' %}">
+      {% csrf_token %}
+      <input type="hidden" name="subject_id" value="{{ selected_subject.pk }}">
+      <input type="hidden" name="date" value="{{ today|date:'Y-m-d' }}">
+
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr><th>#</th><th>USN</th><th>Student Name</th><th>Status</th><th>Remarks</th></tr>
+          </thead>
+          <tbody>
+            {% for row in students_data %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td><span class="badge bg-secondary">{{ row.student.usn }}</span></td>
+              <td class="fw-500">{{ row.student.user.full_name }}</td>
+              <td>
+                <select name="status_{{ row.student.pk }}" class="form-select form-select-sm att-status-select" style="width:110px">
+                  <option value="present" {% if row.record and row.record.status == 'present' %}selected{% endif %}>✅ Present</option>
+                  <option value="absent"  {% if not row.record or row.record.status == 'absent' %}selected{% endif %}>❌ Absent</option>
+                  <option value="late"    {% if row.record and row.record.status == 'late' %}selected{% endif %}>⏰ Late</option>
+                </select>
+              </td>
+              <td>
+                <input type="text" name="remarks_{{ row.student.pk }}"
+                       class="form-control form-control-sm"
+                       placeholder="Optional remark"
+                       value="{{ row.record.remarks|default:'' }}"
+                       style="width:180px">
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" class="text-center text-muted py-3">No students found for this subject.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      {% if students_data %}
+      <div class="mt-3 d-flex gap-2">
+        <button type="submit" class="btn btn-primary px-4">
+          <i class="bi bi-check2-all me-1"></i> Save Attendance
+        </button>
+        <a href="{% url 'attendance:mark' %}?subject={{ selected_subject.pk }}" class="btn btn-outline-secondary">Reset</a>
+      </div>
+      {% endif %}
+    </form>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
