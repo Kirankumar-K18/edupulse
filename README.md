@@ -318,7 +318,7 @@ Recommended production stack:
 
 ## Author
 
-**Kiran Kumar**
+**Kirankumar K**
 
 GitHub:
 https://github.com/Kirankumar-K18
