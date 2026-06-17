@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-setup.py — One-time setup script for Smart Lecturer Review System.
+setup.py — One-time setup script for EduPulse.
 Run this ONCE after cloning the project:
     python setup.py
 """
@@ -11,9 +11,9 @@ import subprocess
 import getpass
 
 print("""
-╔══════════════════════════════════════════════════════════╗
-║     Smart Lecturer Review System — Setup Wizard          ║
-╚══════════════════════════════════════════════════════════╝
+        ╔══════════════════════════════════════════════════════════╗
+        ║ EduPulse : Academic Feedback & Attendance System         ║
+        ╚══════════════════════════════════════════════════════════╝
 """)
 
 # ── Step 1: Check Python version ─────────────────────────────────────

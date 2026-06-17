@@ -10,7 +10,7 @@ from apps.accounts.models import User
 
 
 class Command(BaseCommand):
-    help = 'Create the single admin (superuser) account for Smart Lecturer System'
+    help = 'Create the single admin (superuser) account for EduPulse'
 
     def add_arguments(self, parser):
         parser.add_argument('--email',    type=str, help='Admin email (@college.edu)')

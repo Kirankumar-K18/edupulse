@@ -1,4 +1,4 @@
-# Smart Lecturer Review System
+# EduPulse : Academic Feedback and Attendance Management System
 
 A production-ready college management system built with **Django 4.2 + MySQL + HTML/CSS/JavaScript**.
 

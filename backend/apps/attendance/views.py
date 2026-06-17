@@ -29,7 +29,35 @@ def student_attendance(request):
         'student': student,
         'can_review': student.can_submit_review,
     })
+@student_required
+def subject_history(request, subject_id):
 
+    student = request.user.student_profile
+
+    subject = get_object_or_404(
+        Subject,
+        pk=subject_id
+    )
+
+    records = AttendanceRecord.objects.filter(
+        student=student,
+        subject=subject
+    ).order_by('-date')
+
+    percentage = AttendanceRecord.get_percentage(
+        student,
+        subject
+    )
+
+    return render(
+        request,
+        'attendance/subject_history.html',
+        {
+            'subject': subject,
+            'records': records,
+            'percentage': percentage,
+        }
+    )
 
 # ─── LECTURER: MARK ATTENDANCE ────────────────────────────────────────────────
 
@@ -37,7 +65,20 @@ def student_attendance(request):
 def mark_attendance(request):
     lecturer  = request.user.lecturer_profile
     subjects  = Subject.objects.filter(lecturer=lecturer, is_active=True)
-    today     = timezone.now().date()
+    today = timezone.now().date()
+
+    date_str = request.GET.get('date')
+
+    if date_str:
+        try:
+            selected_date = timezone.datetime.strptime(
+                date_str,
+                '%Y-%m-%d'
+            ).date()
+        except:
+            selected_date = today
+    else:
+        selected_date = today
 
     selected_subject = None
     students_data    = []
@@ -55,7 +96,7 @@ def mark_attendance(request):
             r.student_id: r
             for r in AttendanceRecord.objects.filter(
                 subject=selected_subject,
-                date=today,
+                date=selected_date,
             )
         }
         for s in students:
@@ -65,10 +106,11 @@ def mark_attendance(request):
             })
 
     return render(request, 'attendance/mark_attendance.html', {
-        'subjects':          subjects,
-        'selected_subject':  selected_subject,
-        'students_data':     students_data,
-        'today':             today,
+        'subjects': subjects,
+        'selected_subject': selected_subject,
+        'students_data': students_data,
+        'today': today,
+        'selected_date': selected_date,
     })
 
 
@@ -123,10 +165,40 @@ def submit_attendance(request):
 
 @lecturer_required
 def edit_attendance(request):
-    lecturer = request.user.lecturer_profile
-    records  = AttendanceRecord.objects.filter(lecturer=lecturer).select_related('student__user', 'subject')
-    return render(request, 'attendance/edit_attendance.html', {'records': records})
 
+    lecturer = request.user.lecturer_profile
+
+    subjects = Subject.objects.filter(
+        lecturer=lecturer,
+        is_active=True
+    )
+
+    selected_date = request.GET.get('date')
+    selected_subject = request.GET.get('subject')
+
+    records = AttendanceRecord.objects.none()
+
+    if selected_date and selected_subject:
+
+        records = AttendanceRecord.objects.filter(
+            lecturer=lecturer,
+            date=selected_date,
+            subject_id=selected_subject
+        ).select_related(
+            'student__user',
+            'subject'
+        )
+
+    return render(
+        request,
+        'attendance/edit_attendance.html',
+        {
+            'records': records,
+            'subjects': subjects,
+            'selected_date': selected_date,
+            'selected_subject': selected_subject,
+        }
+    )
 
 @lecturer_required
 @require_POST

@@ -1,5 +1,5 @@
 """
-Smart Lecturer Review System — Settings
+EduPulse — Academic Feedback and Attendance Management System Settings
 Backend lives in: smart_lecturer/backend/
 Frontend lives in: smart_lecturer/frontend/
 """

@@ -16,4 +16,5 @@ urlpatterns = [
     path('subjects/add/', views.add_subject, name='add_subject'),
     path('subjects/edit/<int:pk>/', views.edit_subject, name='edit_subject'),
     path('subjects/delete/<int:pk>/', views.delete_subject, name='delete_subject'),
+    path('subject-history/<int:subject_id>/',views.subject_history,name='subject_history'),
 ]

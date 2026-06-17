@@ -1,8 +1,8 @@
-# Smart Lecturer Review System
+# EduPulse : Academic Feedback and Attendance Management System
 
 A college feedback and attendance management system built with **Django 4.2, MySQL, HTML, CSS, JavaScript, and Bootstrap 5**.
 
-The system provides role-based access for **Admin, HOD, Lecturer, and Student**, with attendance tracking, lecturer review management, bad-word filtering, and analytics dashboards.
+The system provides role-based access for **Admin, HOD, Lecturer, and Student**, with attendance tracking, lecturer review management, subject management, bad-word filtering, attendance analytics, and performance dashboards.
 
 ---
 
@@ -15,37 +15,39 @@ The system provides role-based access for **Admin, HOD, Lecturer, and Student**,
 * Manage Lecturers
 * Manage Students
 * Manage Subjects
-* View system analytics
-* View activity logs
-* Manage bad-word filters
-* View blocked reviews
-* Unblock reviews
+* View System Analytics
+* View Activity Logs
+* Manage Bad Word Filters
+* View Blocked Reviews
+* Unblock Reviews
 
 ### HOD
 
-* Department-specific access
-* Manage lecturers within department
-* Manage students within department
-* View department attendance statistics
-* View lecturer performance
-* View approved and blocked reviews
+* Department-specific Access
+* Manage Lecturers within Department
+* Manage Students within Department
+* Manage Subjects within Department
+* View Department Attendance Statistics
+* View Lecturer Performance
+* View Approved and Blocked Reviews
 
 ### Lecturer
 
-* Mark attendance
-* Edit attendance records
-* View attendance reports
-* View ratings and reviews
-* Monitor student attendance
+* Mark Attendance using Subject + Date Selection
+* Edit Attendance Records using Subject + Date Filters
+* View Attendance Reports
+* View Ratings and Reviews
+* Monitor Student Attendance
 
 ### Student
 
-* Secure login
-* View attendance summary
-* View subject-wise attendance
-* Submit lecturer reviews
-* View review history
-* Attendance eligibility validation
+* Secure Login
+* View Overall Attendance Percentage
+* View Subject-wise Attendance
+* View Detailed Attendance History
+* Submit Lecturer Reviews
+* View Review History
+* Attendance Eligibility Validation
 
 ---
 
@@ -65,18 +67,47 @@ The system provides role-based access for **Admin, HOD, Lecturer, and Student**,
 ## Project Structure
 
 ```text
-smart_lecturer_2/
+EduPulse/
+│
+├── README.md
+├── .gitignore
 │
 ├── backend/
 │   ├── manage.py
 │   ├── requirements.txt
 │   ├── setup.py
+│   ├── smart_lecturer_backup.sql
 │   │
 │   ├── apps/
 │   │   ├── accounts/
+│   │   │   ├── models.py
+│   │   │   ├── views.py
+│   │   │   ├── urls.py
+│   │   │   ├── forms.py
+│   │   │   ├── decorators.py
+│   │   │   ├── admin.py
+│   │   │   └── management/
+│   │   │       └── commands/
+│   │   │           └── create_admin.py
+│   │   │
 │   │   ├── attendance/
-│   │   ├── dashboard/
-│   │   └── reviews/
+│   │   │   ├── models.py
+│   │   │   ├── views.py
+│   │   │   ├── urls.py
+│   │   │   ├── forms.py
+│   │   │   ├── admin.py
+│   │   │   └── migrations/
+│   │   │
+│   │   ├── reviews/
+│   │   │   ├── models.py
+│   │   │   ├── views.py
+│   │   │   ├── urls.py
+│   │   │   ├── forms.py
+│   │   │   └── admin.py
+│   │   │
+│   │   └── dashboard/
+│   │       ├── views.py
+│   │       └── urls.py
 │   │
 │   └── smart_lecturer/
 │       ├── settings.py
@@ -87,17 +118,45 @@ smart_lecturer_2/
 ├── frontend/
 │   ├── static/
 │   │   ├── css/
-│   │   └── js/
+│   │   │   └── main.css
+│   │   ├── js/
+│   │   │   └── main.js
+│   │   └── images/
 │   │
 │   └── templates/
+│       ├── base.html
+│       │
 │       ├── accounts/
+│       │   ├── login.html
+│       │   ├── profile.html
+│       │   ├── departments.html
+│       │   ├── lecturers.html
+│       │   ├── students.html
+│       │   └── hods.html
+│       │
 │       ├── attendance/
-│       ├── dashboard/
+│       │   ├── student_attendance.html
+│       │   ├── subject_history.html
+│       │   ├── mark_attendance.html
+│       │   ├── edit_attendance.html
+│       │   ├── subjects.html
+│       │   ├── subject_form.html
+│       │   └── report.html
+│       │
 │       ├── reviews/
-│       └── base.html
+│       │   ├── submit_review.html
+│       │   ├── my_reviews.html
+│       │   ├── lecturer_reviews.html
+│       │   └── admin_reviews.html
+│       │
+│       └── dashboard/
+│           ├── admin_dashboard.html
+│           ├── hod_dashboard.html
+│           ├── lecturer_dashboard.html
+│           └── student_dashboard.html
 │
-├── .gitignore
-└── README.md
+└── docs/
+    └── screenshots/
 ```
 
 ---
@@ -205,6 +264,66 @@ http://127.0.0.1:8000/
 
 ---
 
+## Subject Management
+
+### Admin
+
+* Add Subjects
+* Edit Subjects
+* Assign Lecturers
+* Configure Semester and Credits
+* Activate / Deactivate Subjects
+
+### HOD
+
+* View Department Subjects
+* Manage Subjects within Department
+
+---
+
+## Attendance System
+
+### Features
+### Attendance System
+
+- Subject Management UI
+- Manual Date Selection for Attendance
+- Mark Attendance by Subject and Date
+- Edit Attendance by Subject and Date
+- Duplicate Attendance Detection
+- Student Attendance History
+- Subject-wise Attendance Percentage
+- Overall Attendance Percentage
+- Attendance Reports for HOD and Admin
+- Attendance Eligibility Check for Reviews
+
+### Lecturer Workflow
+
+1. Select Subject
+2. Select Attendance Date
+3. Load Students
+4. Mark Present / Absent / Late
+5. Save Attendance Records
+
+### Attendance Editing
+
+1. Select Subject
+2. Select Date
+3. Search Records
+4. Edit Attendance
+5. Save Changes
+
+### Student Attendance Tracking
+
+Students can:
+
+* View Overall Attendance Percentage
+* View Subject-wise Attendance Statistics
+* View Attendance History for Individual Subjects
+* View Present / Absent / Late Records
+
+---
+
 ## Review System
 
 ### Features
@@ -227,15 +346,12 @@ Students can submit reviews only when:
 
 ---
 
-## Attendance System
+## Navigation Features
 
-### Features
-
-* Subject-wise Attendance
-* Daily Attendance Records
-* Percentage Calculation
-* Attendance Analytics
-* Attendance Eligibility Check for Reviews
+* Universal Back Button
+* Dashboard-aware Navigation
+* Responsive Sidebar
+* Mobile-Friendly Interface
 
 ---
 
@@ -310,9 +426,9 @@ Recommended production stack:
 * PDF Attendance Reports
 * Export Reviews to Excel
 * Advanced Analytics Dashboard
-* Subject Management UI
 * Lecturer Performance Trends
-* Mobile Responsive Improvements
+* Mobile Application
+* AI-based Feedback Analysis
 
 ---
 
@@ -323,5 +439,8 @@ Recommended production stack:
 GitHub:
 https://github.com/Kirankumar-K18
 
+Project:
+**EduPulse : Academic Feedback and Attendance Management System**
+
 Repository:
-https://github.com/Kirankumar-K18/smart-lecturer-review-system
+https://github.com/Kirankumar-K18/edupulse

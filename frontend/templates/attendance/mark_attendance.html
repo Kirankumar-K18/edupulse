@@ -9,18 +9,42 @@
     <h6 class="section-card-title"><i class="bi bi-funnel text-primary-custom"></i> Select Subject</h6>
   </div>
   <div class="section-card-body">
-    <form method="get" class="row g-2 align-items-end">
+    <form method="get" class="row g-3 align-items-end">
+
+      <div class="col-md-3">
+        <label class="form-label">Attendance Date</label>
+        <input
+          type="date"
+          name="date"
+          class="form-control"
+          value="{{ selected_date|default:today|date:'Y-m-d' }}"
+        >
+      </div>
+
       <div class="col-md-5">
         <label class="form-label">Subject</label>
-        <select name="subject" class="form-select" onchange="this.form.submit()">
+        <select name="subject" class="form-select">
           <option value="">— Select Subject —</option>
+
           {% for subj in subjects %}
-          <option value="{{ subj.pk }}" {% if selected_subject and selected_subject.pk == subj.pk %}selected{% endif %}>
+          <option value="{{ subj.pk }}"
+            {% if selected_subject and selected_subject.pk == subj.pk %}
+              selected
+            {% endif %}
+          >
             {{ subj.code }} — {{ subj.name }} (Sem {{ subj.semester }})
           </option>
           {% endfor %}
+
         </select>
       </div>
+
+      <div class="col-md-2">
+        <button type="submit" class="btn btn-primary w-100">
+          Load Students
+        </button>
+      </div>
+
     </form>
   </div>
 </div>
@@ -30,7 +54,7 @@
   <div class="section-card-header">
     <h6 class="section-card-title">
       <i class="bi bi-pencil-square text-primary-custom"></i>
-      {{ selected_subject.name }} — {{ today|date:"d M Y" }}
+      {{ selected_subject.name }} — {{ selected_date|date:"d M Y" }}
     </h6>
     <div>
       <label class="form-check-label text-muted me-2 fs-xs">Mark all present:</label>
@@ -41,8 +65,7 @@
     <form method="post" action="{% url 'attendance:submit' %}">
       {% csrf_token %}
       <input type="hidden" name="subject_id" value="{{ selected_subject.pk }}">
-      <input type="hidden" name="date" value="{{ today|date:'Y-m-d' }}">
-
+      <input type="hidden" name="date" value="{{ selected_date|date:'Y-m-d' }}">
       <div class="table-responsive">
         <table class="table table-hover">
           <thead>
