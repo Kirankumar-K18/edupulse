@@ -10,7 +10,7 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.db import transaction
 from django.utils import timezone
-
+from .forms import SubjectForm
 from .models import Subject, AttendanceRecord
 from apps.accounts.models import Student, Lecturer, ActivityLog
 from apps.accounts.decorators import lecturer_required, student_required, admin_or_hod_required, admin_required
@@ -171,3 +171,82 @@ def manage_subjects(request):
     else:
         subjects = Subject.objects.all()
     return render(request, 'attendance/subjects.html', {'subjects': subjects})
+@admin_or_hod_required
+def add_subject(request):
+
+    if request.method == 'POST':
+        form = SubjectForm(request.POST)
+
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Subject added successfully.")
+            return redirect('attendance:subjects')
+
+    else:
+        form = SubjectForm()
+
+    return render(
+        request,
+        'attendance/subject_form.html',
+        {'form': form, 'title': 'Add Subject'}
+    )
+
+
+@admin_or_hod_required
+def edit_subject(request, pk):
+
+    subject = get_object_or_404(
+        Subject,
+        pk=pk
+    )
+
+    if request.user.is_hod:
+        if subject.department != request.user.hod_profile.department:
+            messages.error(request, "Access denied.")
+            return redirect('attendance:subjects')
+
+    if request.method == 'POST':
+        form = SubjectForm(
+            request.POST,
+            instance=subject
+        )
+
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Subject updated successfully.")
+            return redirect('attendance:subjects')
+
+    else:
+        form = SubjectForm(instance=subject)
+
+    return render(
+        request,
+        'attendance/subject_form.html',
+        {
+            'form': form,
+            'title': 'Edit Subject'
+        }
+    )
+
+
+@admin_or_hod_required
+def delete_subject(request, pk):
+
+    subject = get_object_or_404(
+        Subject,
+        pk=pk
+    )
+
+    if request.user.is_hod:
+        if subject.department != request.user.hod_profile.department:
+            messages.error(request, "Access denied.")
+            return redirect('attendance:subjects')
+
+    subject.delete()
+
+    messages.success(
+        request,
+        "Subject deleted successfully."
+    )
+
+    return redirect('attendance:subjects')
