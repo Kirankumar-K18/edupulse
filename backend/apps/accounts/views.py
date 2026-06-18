@@ -427,19 +427,7 @@ def activity_logs(request):
         'action_choices': ActivityLog.Action.choices,
         'current_action': action_filter,
     })
-def test_brevo(request):
-    try:
-        result = send_brevo_email(
-            "smartlecturerreview18@gmail.com",
-            "EduPulse Brevo Test",
-            "<h1>Brevo API is working!</h1><p>This email was sent using the Brevo API.</p>"
-        )
 
-        return HttpResponse(f"<pre>{result}</pre>")
-
-    except Exception as e:
-        return HttpResponse(f"<pre>{e}</pre>")
-    
 def brevo_password_reset(request):
     if request.method == "POST":
         form = PasswordResetForm(request.POST)

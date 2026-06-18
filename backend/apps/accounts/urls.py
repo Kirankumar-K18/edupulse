@@ -69,5 +69,4 @@ urlpatterns = [
         ),
         name='password_reset_complete',
     ),
-    path('test-brevo/', views.test_brevo, name='test_brevo'),
 ]
