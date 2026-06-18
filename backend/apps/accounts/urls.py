@@ -69,7 +69,5 @@ urlpatterns = [
         ),
         name='password_reset_complete',
     ),
-    path('email-debug/', views.email_debug, name='email_debug'),
-    path('test-email/', views.test_email, name='test_email'),
     path('test-brevo/', views.test_brevo, name='test_brevo'),
 ]
