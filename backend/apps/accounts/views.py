@@ -25,7 +25,13 @@ from .forms import (
     CustomPasswordChangeForm,
 )
 from .decorators import admin_required, hod_required, lecturer_required, student_required, admin_or_hod_required
-
+from django.contrib.auth.forms import PasswordResetForm
+from django.contrib.auth.tokens import default_token_generator
+from django.contrib.sites.shortcuts import get_current_site
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from django.urls import reverse
+from django.shortcuts import redirect, render
 
 # ─── HOME ─────────────────────────────────────────────────────────────────────
 
@@ -421,35 +427,6 @@ def activity_logs(request):
         'action_choices': ActivityLog.Action.choices,
         'current_action': action_filter,
     })
-def email_debug(request):
-    return HttpResponse(
-        f"HOST={settings.EMAIL_HOST}<br>"
-        f"PORT={settings.EMAIL_PORT}<br>"
-        f"USER={settings.EMAIL_HOST_USER}<br>"
-        f"TLS={settings.EMAIL_USE_TLS}"
-    )
-
-
-from django.core.mail import send_mail
-from django.http import HttpResponse
-from django.conf import settings
-import traceback
-
-def test_email(request):
-    try:
-        send_mail(
-            "Test Email",
-            "Hello from EduPulse",
-            settings.DEFAULT_FROM_EMAIL,
-            ["smartlecturerreview18@gmail.com"],
-            fail_silently=False,
-        )
-        return HttpResponse("SUCCESS")
-    except Exception as e:
-        return HttpResponse(
-            f"<pre>{type(e).__name__}\n\n{str(e)}\n\n{traceback.format_exc()}</pre>"
-        )
-    
 def test_brevo(request):
     try:
         result = send_brevo_email(
@@ -462,3 +439,52 @@ def test_brevo(request):
 
     except Exception as e:
         return HttpResponse(f"<pre>{e}</pre>")
+    
+def brevo_password_reset(request):
+    if request.method == "POST":
+        form = PasswordResetForm(request.POST)
+
+        if form.is_valid():
+            email = form.cleaned_data["email"]
+
+            for user in form.get_users(email):
+                uid = urlsafe_base64_encode(force_bytes(user.pk))
+                token = default_token_generator.make_token(user)
+
+                reset_url = (
+                    f"https://edupulse-984z.onrender.com"
+                    f"{reverse('accounts:password_reset_confirm', kwargs={'uidb64': uid, 'token': token})}"
+                )
+
+                html_content = f"""
+                <h2>EduPulse Password Reset</h2>
+
+                <p>Hello {user.full_name},</p>
+
+                <p>You requested a password reset.</p>
+
+                <p>
+                    <a href="{reset_url}">
+                        Click here to reset your password
+                    </a>
+                </p>
+
+                <p>If you did not request this, ignore this email.</p>
+                """
+
+                send_brevo_email(
+                    user.email,
+                    "EduPulse Password Reset",
+                    html_content
+                )
+
+            return redirect("accounts:password_reset_done")
+
+    else:
+        form = PasswordResetForm()
+
+    return render(
+        request,
+        "accounts/password_reset.html",
+        {"form": form}
+    )
