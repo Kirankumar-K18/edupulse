@@ -15,7 +15,9 @@ from django.http import JsonResponse
 from django.db import transaction
 from django.conf import settings
 from django.core.paginator import Paginator
-
+from django.http import HttpResponse
+from django.conf import settings
+from django.core.mail import send_mail
 from .models import User, Student, Lecturer, HOD, Department, ActivityLog, BadWord
 from .forms import (
     LoginForm, StudentLoginForm, StudentRegistrationForm,
@@ -419,3 +421,24 @@ def activity_logs(request):
         'action_choices': ActivityLog.Action.choices,
         'current_action': action_filter,
     })
+def email_debug(request):
+    return HttpResponse(
+        f"HOST={settings.EMAIL_HOST}<br>"
+        f"PORT={settings.EMAIL_PORT}<br>"
+        f"USER={settings.EMAIL_HOST_USER}<br>"
+        f"TLS={settings.EMAIL_USE_TLS}"
+    )
+
+
+def test_email(request):
+    try:
+        send_mail(
+            "Test Email",
+            "Hello from EduPulse",
+            settings.EMAIL_HOST_USER,
+            [settings.EMAIL_HOST_USER],
+            fail_silently=False,
+        )
+        return HttpResponse("SUCCESS")
+    except Exception as e:
+        return HttpResponse(str(e))
