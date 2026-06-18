@@ -3,7 +3,7 @@ accounts/views.py
 All authentication views: login (role-aware), register, logout,
 profile, admin management of departments/HODs/lecturers/students.
 """
-
+from .utils import send_brevo_email
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -449,3 +449,16 @@ def test_email(request):
         return HttpResponse(
             f"<pre>{type(e).__name__}\n\n{str(e)}\n\n{traceback.format_exc()}</pre>"
         )
+    
+def test_brevo(request):
+    try:
+        result = send_brevo_email(
+            "smartlecturerreview18@gmail.com",
+            "EduPulse Brevo Test",
+            "<h1>Brevo API is working!</h1><p>This email was sent using the Brevo API.</p>"
+        )
+
+        return HttpResponse(f"<pre>{result}</pre>")
+
+    except Exception as e:
+        return HttpResponse(f"<pre>{e}</pre>")

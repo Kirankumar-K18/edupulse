@@ -186,3 +186,4 @@ DEFAULT_FROM_EMAIL = os.environ.get(
     "DEFAULT_FROM_EMAIL",
     "smartlecturerreview18@gmail.com"
 )
+BREVO_API_KEY = os.environ.get("BREVO_API_KEY")
