@@ -2,8 +2,8 @@
 *.pyc
 __pycache__/
 db.sqlite3
-staticfiles/
-media/
+backend/staticfiles/
+backend/media/
 logs/
 *.log
 .DS_Store
@@ -11,3 +11,4 @@ venv/
 env/
 .venv
 *.sql
+.venv-1/
