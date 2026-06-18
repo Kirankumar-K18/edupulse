@@ -430,15 +430,22 @@ def email_debug(request):
     )
 
 
+from django.core.mail import send_mail
+from django.http import HttpResponse
+from django.conf import settings
+import traceback
+
 def test_email(request):
     try:
         send_mail(
             "Test Email",
             "Hello from EduPulse",
-            settings.EMAIL_HOST_USER,
-            [settings.EMAIL_HOST_USER],
+            settings.DEFAULT_FROM_EMAIL,
+            ["smartlecturerreview18@gmail.com"],
             fail_silently=False,
         )
         return HttpResponse("SUCCESS")
     except Exception as e:
-        return HttpResponse(str(e))
+        return HttpResponse(
+            f"<pre>{type(e).__name__}\n\n{str(e)}\n\n{traceback.format_exc()}</pre>"
+        )
