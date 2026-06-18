@@ -1,114 +1,153 @@
 # EduPulse : Academic Feedback and Attendance Management System
 
-A college feedback and attendance management system built with **Django 4.2, MySQL, HTML, CSS, JavaScript, and Bootstrap 5**.
+<p align="center">
+  <img src="docs/screenshots/logo.png" alt="EduPulse Logo" width="180">
+</p>
 
-The system provides role-based access for **Admin, HOD, Lecturer, and Student**, with attendance tracking, lecturer review management, subject management, bad-word filtering, attendance analytics, and performance dashboards.
+<p align="center">
+  <strong>A role-based academic management platform for attendance tracking, lecturer feedback, review moderation, and institutional analytics.</strong>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Django-4.2-green" alt="Django">
+  <img src="https://img.shields.io/badge/Python-3.11-blue" alt="Python">
+  <img src="https://img.shields.io/badge/PostgreSQL-Database-blue" alt="PostgreSQL">
+  <img src="https://img.shields.io/badge/Deployment-Render-purple" alt="Render">
+  <img src="https://img.shields.io/badge/Email-Brevo-orange" alt="Brevo">
+</p>
 
 ---
 
-## Features
+## 🌐 Live Demo
 
-### Admin
+**Live Application:** https://edupulse-984z.onrender.com
 
-* Manage Departments
-* Manage HODs
-* Manage Lecturers
-* Manage Students
-* Manage Subjects
-* View System Analytics
-* View Activity Logs
-* Manage Bad Word Filters
-* View Blocked Reviews
-* Unblock Reviews
+**GitHub Repository:** https://github.com/Kirankumar-K18/edupulse
 
-### HOD
+---
 
-* Department-specific Access
-* Manage Lecturers within Department
-* Manage Students within Department
-* Manage Subjects within Department
-* View Department Attendance Statistics
-* View Lecturer Performance
-* View Approved and Blocked Reviews
+## 📖 Overview
 
-### Lecturer
+EduPulse is a comprehensive Academic Feedback and Attendance Management System developed to streamline academic administration, lecturer evaluation, attendance monitoring, and institutional analytics.
 
-* Mark Attendance using Subject + Date Selection
-* Edit Attendance Records using Subject + Date Filters
-* View Attendance Reports
-* View Ratings and Reviews
-* Monitor Student Attendance
+The platform provides dedicated dashboards for Administrators, Heads of Department (HODs), Lecturers, and Students. It integrates attendance management, lecturer feedback, review moderation, performance analytics, secure authentication, and cloud deployment into a single unified solution.
 
-### Student
+---
 
-* Secure Login
-* View Overall Attendance Percentage
-* View Subject-wise Attendance
-* View Detailed Attendance History
-* Submit Lecturer Reviews
-* View Review History
+## ✨ Key Features
+
+### 🔐 Authentication & Security
+
+* Custom Django User Model
+* Role-Based Access Control (RBAC)
+* Secure Login & Logout
+* Password Change Functionality
+* Forgot Password via Brevo Email API
+* Secure Password Reset Workflow
+* Activity Logging
+* CSRF Protection
+* Password Hashing (PBKDF2)
+
+### 📊 Attendance Management
+
+* Subject-Based Attendance Tracking
+* Attendance Marking and Editing
+* Attendance History Management
+* Subject-Wise Attendance Reports
+* Overall Attendance Percentage Calculation
 * Attendance Eligibility Validation
+* Duplicate Attendance Prevention
+
+### ⭐ Lecturer Feedback System
+
+* Lecturer Rating System (1–5 Stars)
+* Student Feedback Submission
+* Attendance-Based Review Eligibility
+* Review Moderation
+* Bad Word Detection and Filtering
+* Blocked Review Management
+* Review History Tracking
+* One Review Per Lecturer Per Semester
+
+### 📈 Analytics Dashboard
+
+* Attendance Analytics
+* Lecturer Performance Monitoring
+* Department Statistics
+* Review Analytics
+* Administrative Insights
+* Activity Monitoring
 
 ---
 
-## Technology Stack
+## 👥 User Roles
 
-| Layer          | Technology               |
-| -------------- | ------------------------ |
-| Backend        | Python 3.11, Django 4.2  |
-| Database       | MySQL 8+                 |
-| Frontend       | HTML5, CSS3, JavaScript  |
-| UI Framework   | Bootstrap 5              |
-| Authentication | Django Custom User Model |
-| ORM            | Django ORM               |
+| Role     | Responsibilities                                                                |
+| -------- | ------------------------------------------------------------------------------- |
+| Admin    | Manage Departments, HODs, Lecturers, Students, Subjects, Analytics & Moderation |
+| HOD      | Department Management, Lecturer Monitoring, Attendance Analytics                |
+| Lecturer | Attendance Management, Student Monitoring, Review Tracking                      |
+| Student  | Attendance Tracking, Feedback Submission, Review History                        |
 
 ---
 
-## Project Structure
+## 🛠️ Technology Stack
+
+| Category        | Technology               |
+| --------------- | ------------------------ |
+| Backend         | Django 4.2               |
+| Language        | Python 3.11              |
+| Database        | PostgreSQL               |
+| Frontend        | HTML5, CSS3, JavaScript  |
+| UI Framework    | Bootstrap 5              |
+| Authentication  | Custom Django User Model |
+| ORM             | Django ORM               |
+| Email Service   | Brevo API                |
+| Deployment      | Render                   |
+| Web Server      | Gunicorn                 |
+| Static Files    | WhiteNoise               |
+| Version Control | Git & GitHub             |
+
+---
+
+## 📸 Application Screenshots
+
+### Login Page
+
+![Login Page](docs/screenshots/login.png)
+
+### Admin Dashboard
+
+![Admin Dashboard](docs/screenshots/admin_dashboard.png)
+
+### HOD Dashboard
+
+![HOD Dashboard](docs/screenshots/hod_dashboard.png)
+
+### Lecturer Dashboard
+
+![Lecturer Dashboard](docs/screenshots/lecturer_dashboard.png)
+
+### Student Dashboard
+
+![Student Dashboard](docs/screenshots/student_dashboard.png)
+
+---
+
+## 📂 Project Structure
 
 ```text
 EduPulse/
 │
-├── README.md
-├── .gitignore
-│
 ├── backend/
+│   ├── apps/
+│   │   ├── accounts/      # Authentication & User Management
+│   │   ├── attendance/    # Attendance Management
+│   │   ├── reviews/       # Lecturer Reviews & Ratings
+│   │   └── dashboard/     # Role-Based Dashboards
+│   │
 │   ├── manage.py
 │   ├── requirements.txt
-│   ├── setup.py
-│   ├── smart_lecturer_backup.sql
-│   │
-│   ├── apps/
-│   │   ├── accounts/
-│   │   │   ├── models.py
-│   │   │   ├── views.py
-│   │   │   ├── urls.py
-│   │   │   ├── forms.py
-│   │   │   ├── decorators.py
-│   │   │   ├── admin.py
-│   │   │   └── management/
-│   │   │       └── commands/
-│   │   │           └── create_admin.py
-│   │   │
-│   │   ├── attendance/
-│   │   │   ├── models.py
-│   │   │   ├── views.py
-│   │   │   ├── urls.py
-│   │   │   ├── forms.py
-│   │   │   ├── admin.py
-│   │   │   └── migrations/
-│   │   │
-│   │   ├── reviews/
-│   │   │   ├── models.py
-│   │   │   ├── views.py
-│   │   │   ├── urls.py
-│   │   │   ├── forms.py
-│   │   │   └── admin.py
-│   │   │
-│   │   └── dashboard/
-│   │       ├── views.py
-│   │       └── urls.py
-│   │
 │   └── smart_lecturer/
 │       ├── settings.py
 │       ├── urls.py
@@ -117,63 +156,44 @@ EduPulse/
 │
 ├── frontend/
 │   ├── static/
-│   │   ├── css/
-│   │   │   └── main.css
-│   │   ├── js/
-│   │   │   └── main.js
-│   │   └── images/
-│   │
 │   └── templates/
-│       ├── base.html
-│       │
-│       ├── accounts/
-│       │   ├── login.html
-│       │   ├── profile.html
-│       │   ├── departments.html
-│       │   ├── lecturers.html
-│       │   ├── students.html
-│       │   └── hods.html
-│       │
-│       ├── attendance/
-│       │   ├── student_attendance.html
-│       │   ├── subject_history.html
-│       │   ├── mark_attendance.html
-│       │   ├── edit_attendance.html
-│       │   ├── subjects.html
-│       │   ├── subject_form.html
-│       │   └── report.html
-│       │
-│       ├── reviews/
-│       │   ├── submit_review.html
-│       │   ├── my_reviews.html
-│       │   ├── lecturer_reviews.html
-│       │   └── admin_reviews.html
-│       │
-│       └── dashboard/
-│           ├── admin_dashboard.html
-│           ├── hod_dashboard.html
-│           ├── lecturer_dashboard.html
-│           └── student_dashboard.html
 │
-└── docs/
-    └── screenshots/
+├── docs/
+│   └── screenshots/
+│
+├── README.md
+└── .gitignore
 ```
 
 ---
 
-## Installation
+## 🚀 Key Highlights
 
-### 1. Clone Repository
+* Custom Django User Model
+* Role-Based Academic Management System
+* Attendance Tracking & Analytics
+* Lecturer Review & Rating Platform
+* Review Moderation & Content Filtering
+* Secure Password Recovery via Brevo API
+* PostgreSQL Cloud Database Integration
+* Production Deployment on Render
+* Responsive User Interface
+
+---
+
+## ⚙️ Local Installation
+
+### Clone Repository
 
 ```bash
-git clone https://github.com/Kirankumar-K18/smart-lecturer-review-system.git
+git clone https://github.com/Kirankumar-K18/edupulse.git
 
-cd smart-lecturer-review-system
+cd edupulse
 ```
 
-### 2. Create Virtual Environment
+### Create Virtual Environment
 
-Windows:
+#### Windows
 
 ```bash
 python -m venv .venv
@@ -181,7 +201,7 @@ python -m venv .venv
 .venv\Scripts\activate
 ```
 
-Linux / macOS:
+#### Linux / macOS
 
 ```bash
 python3 -m venv .venv
@@ -189,17 +209,15 @@ python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-### 3. Install Dependencies
+### Install Dependencies
 
 ```bash
 pip install -r backend/requirements.txt
 ```
 
-### 4. Configure Environment
+### Configure Environment Variables
 
-Create a `.env` file inside the backend folder.
-
-Example:
+Create a `.env` file:
 
 ```env
 DJANGO_SECRET_KEY=your-secret-key
@@ -208,24 +226,16 @@ DEBUG=True
 
 ALLOWED_HOSTS=localhost,127.0.0.1
 
-DB_NAME=smart_lecturer_db
-DB_USER=root
-DB_PASSWORD=your_password
+DB_NAME=database_name
+DB_USER=database_user
+DB_PASSWORD=database_password
 DB_HOST=localhost
-DB_PORT=3306
+DB_PORT=5432
 
-COLLEGE_EMAIL_DOMAIN=college.edu
+BREVO_API_KEY=your_brevo_api_key
 ```
 
-### 5. Create Database
-
-```sql
-CREATE DATABASE smart_lecturer_db
-CHARACTER SET utf8mb4
-COLLATE utf8mb4_unicode_ci;
-```
-
-### 6. Apply Migrations
+### Apply Migrations
 
 ```bash
 cd backend
@@ -233,13 +243,13 @@ cd backend
 python manage.py migrate
 ```
 
-### 7. Create Superuser
+### Create Superuser
 
 ```bash
 python manage.py createsuperuser
 ```
 
-### 8. Run Development Server
+### Run Development Server
 
 ```bash
 python manage.py runserver
@@ -253,194 +263,69 @@ http://127.0.0.1:8000/
 
 ---
 
-## Login Roles
-
-| Role     | Dashboard              |
-| -------- | ---------------------- |
-| Admin    | `/dashboard/admin/`    |
-| HOD      | `/dashboard/hod/`      |
-| Lecturer | `/dashboard/lecturer/` |
-| Student  | `/dashboard/student/`  |
-
----
-
-## Subject Management
-
-### Admin
-
-* Add Subjects
-* Edit Subjects
-* Assign Lecturers
-* Configure Semester and Credits
-* Activate / Deactivate Subjects
-
-### HOD
-
-* View Department Subjects
-* Manage Subjects within Department
-
----
-
-## Attendance System
-
-### Features
-### Attendance System
-
-- Subject Management UI
-- Manual Date Selection for Attendance
-- Mark Attendance by Subject and Date
-- Edit Attendance by Subject and Date
-- Duplicate Attendance Detection
-- Student Attendance History
-- Subject-wise Attendance Percentage
-- Overall Attendance Percentage
-- Attendance Reports for HOD and Admin
-- Attendance Eligibility Check for Reviews
-
-### Lecturer Workflow
-
-1. Select Subject
-2. Select Attendance Date
-3. Load Students
-4. Mark Present / Absent / Late
-5. Save Attendance Records
-
-### Attendance Editing
-
-1. Select Subject
-2. Select Date
-3. Search Records
-4. Edit Attendance
-5. Save Changes
-
-### Student Attendance Tracking
-
-Students can:
-
-* View Overall Attendance Percentage
-* View Subject-wise Attendance Statistics
-* View Attendance History for Individual Subjects
-* View Present / Absent / Late Records
-
----
-
-## Review System
-
-### Features
-
-* 1–5 Star Rating
-* Text Feedback
-* Attendance Eligibility Check
-* Bad Word Detection
-* Auto Block Offensive Reviews
-* Review Moderation
-* One Review Per Lecturer Per Semester
-
-### Review Validation
-
-Students can submit reviews only when:
-
-* Attendance meets minimum threshold
-* Lecturer exists
-* Review has not already been submitted for that semester
-
----
-
-## Navigation Features
-
-* Universal Back Button
-* Dashboard-aware Navigation
-* Responsive Sidebar
-* Mobile-Friendly Interface
-
----
-
-## Security Features
+## 🔒 Security Features
 
 * Django CSRF Protection
 * Password Hashing (PBKDF2)
-* Strong Password Validation
 * Role-Based Access Control
-* Department Isolation for HOD
+* Department-Level Data Isolation
 * Session Authentication
-* SQL Injection Protection via ORM
+* ORM-Based SQL Injection Protection
 * Activity Logging
 * Review Moderation
+* Secure Password Recovery
 
 ---
 
-## Environment Variables
+## ☁️ Deployment
 
-| Variable             | Description            |
-| -------------------- | ---------------------- |
-| DJANGO_SECRET_KEY    | Django Secret Key      |
-| DEBUG                | Development Mode       |
-| ALLOWED_HOSTS        | Allowed Hosts          |
-| DB_NAME              | Database Name          |
-| DB_USER              | Database Username      |
-| DB_PASSWORD          | Database Password      |
-| DB_HOST              | Database Host          |
-| DB_PORT              | Database Port          |
-| COLLEGE_EMAIL_DOMAIN | Allowed College Domain |
+EduPulse is deployed on Render using:
 
----
-
-## Production Deployment
-
-Before deployment:
-
-```env
-DEBUG=False
-```
-
-Generate a strong secret key and update:
-
-```env
-DJANGO_SECRET_KEY=your-production-secret-key
-```
-
-Configure:
-
-```env
-ALLOWED_HOSTS=yourdomain.com,www.yourdomain.com
-```
-
-Then run:
-
-```bash
-python manage.py collectstatic
-```
-
-Recommended production stack:
-
-* Nginx
+* Django 4.2
+* PostgreSQL Database
 * Gunicorn
-* MySQL
-* Ubuntu Server
+* WhiteNoise
+* Brevo Email API
+
+Production deployment includes:
+
+* Cloud Database Integration
+* Secure Authentication
+* Password Recovery System
+* Static Asset Hosting
+* Environment Variable Management
 
 ---
 
-## Future Enhancements
+## 🔮 Future Enhancements
 
-* Email Notifications
-* PDF Attendance Reports
-* Export Reviews to Excel
+* AI-Based Feedback Sentiment Analysis
+* Lecturer Performance Prediction
+* PDF Report Generation
+* Excel Export Functionality
+* Mobile Application Support
+* Real-Time Notifications
 * Advanced Analytics Dashboard
-* Lecturer Performance Trends
-* Mobile Application
-* AI-based Feedback Analysis
 
 ---
 
-## Author
+## 👨‍💻 Author
 
 **Kirankumar K**
 
-GitHub:
-https://github.com/Kirankumar-K18
+Computer Science & Data Science Engineering
 
-Project:
-**EduPulse : Academic Feedback and Attendance Management System**
+RNS Institute of Technology
 
-Repository:
-https://github.com/Kirankumar-K18/edupulse
+GitHub: https://github.com/Kirankumar-K18
+
+Repository: https://github.com/Kirankumar-K18/edupulse
+
+Live Demo: https://edupulse-984z.onrender.com
+
+---
+
+## 📄 License
+
+This project is developed for educational and academic purposes.
+
