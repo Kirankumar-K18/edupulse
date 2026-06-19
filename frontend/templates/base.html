@@ -39,11 +39,7 @@
     <!-- User Badge -->
     <div class="sidebar-user">
       <div class="user-avatar">
-        {% if user.profile_pic %}
-          <img src="{{ user.profile_pic.url }}" alt="avatar">
-        {% else %}
-          <span>{{ user.full_name|first|upper }}</span>
-        {% endif %}
+        <span>{{ user.full_name|first|upper }}</span>
       </div>
       <div class="user-info">
         <div class="user-name">{{ user.full_name }}</div>
