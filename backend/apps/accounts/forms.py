@@ -260,7 +260,6 @@ class ProfileUpdateForm(forms.ModelForm):
         widgets = {
             'full_name':   forms.TextInput(attrs={'class': 'form-control'}),
             'phone':       forms.TextInput(attrs={'class': 'form-control'}),
-            'profile_pic': forms.ClearableFileInput(attrs={'class': 'form-control'}),
         }
 
 
