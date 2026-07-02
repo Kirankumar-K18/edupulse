@@ -23,7 +23,7 @@ if _env_path.exists():
                 _k, _v = _line.split('=', 1)
                 os.environ.setdefault(_k.strip(), _v.strip())
 
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-change-this-in-production-use-env-50chars')
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
@@ -94,7 +94,7 @@ else:
             'ENGINE': 'django.db.backends.mysql',
             'NAME':     os.environ.get('DB_NAME', 'smart_lecturer'),
             'USER':     os.environ.get('DB_USER', 'root'),
-            'PASSWORD': os.environ.get('DB_PASSWORD', 'Admin@123'),
+            'PASSWORD': os.environ.get('DB_PASSWORD', ''),
             'HOST':     os.environ.get('DB_HOST', 'localhost'),
             'PORT':     os.environ.get('DB_PORT', '3306'),
             'OPTIONS': {
